@@ -18,8 +18,8 @@ output*
 /output/
 /test/output/
 /bin/
+out/
 
-/.idea/
 *.iml
 *.jar
 
