@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="deploy" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
-    <makefile filename="$PROJECT_DIR$/Makefile" target="deploy" workingDirectory="" arguments="">
+    <makefile filename="$PROJECT_DIR$/Makefile" target="deploy log" workingDirectory="" arguments="">
       <envs />
     </makefile>
     <method v="2">

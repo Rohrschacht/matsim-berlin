@@ -39,4 +39,8 @@ sync: script-build
 
 # create and deploy qsub script; enqueue qsub script
 deploy: sync
-	ssh ${REMOTE} -t "cd ${REMOTE_FOLDER_ROOT} && qsub ${NAME}.sh"
+	# needs to escape $ as \$$ and not just \$ because make is a special kid
+	ssh ${REMOTE} -t "cd \$$(realpath ${REMOTE_FOLDER_ROOT}) && qsub ${NAME}.sh"
+
+log:
+	ssh ${REMOTE} -t "tail -f ${REMOTE_FOLDER_ROOT}${NAME}.log"
