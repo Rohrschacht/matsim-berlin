@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact name="matsim-berlin">
-    <output-path>$PROJECT_DIR$/out/artifacts/matsim_berlin</output-path>
+    <output-path>$PROJECT_DIR$/out/artifacts/matsim-berlin</output-path>
     <root id="root">
       <element id="library" level="project" name="Maven: aopalliance:aopalliance:1.0" />
       <element id="library" level="project" name="Maven: cadyts:cadyts:1.1.0" />
