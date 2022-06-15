@@ -17,7 +17,7 @@
  *                                                                         *
  * *********************************************************************** */
 
-package org.matsim.run;
+package org.matsim.run.homework1;
 
 import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
 import com.google.inject.Singleton;
@@ -46,7 +46,9 @@ import org.matsim.core.router.AnalysisMainModeIdentifier;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.scoring.functions.ScoringParametersForPerson;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
+import org.matsim.prepare.homework1.PrepareNetworkCarfreeRing;
 import org.matsim.prepare.population.AssignIncome;
+import org.matsim.run.BerlinExperimentalConfigGroup;
 import org.matsim.run.drt.OpenBerlinIntermodalPtDrtRouterModeIdentifier;
 import org.matsim.run.drt.RunDrtOpenBerlinScenario;
 import playground.vsp.scoring.IncomeDependentUtilityOfMoneyPersonScoringParameters;
@@ -62,9 +64,9 @@ import static org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorith
  * @author ikaddoura
  */
 
-public final class RunBerlinScenario {
+public final class RunBerlinScenarioRingCarfree {
 
-	private static final Logger log = Logger.getLogger(RunBerlinScenario.class);
+	private static final Logger log = Logger.getLogger(RunBerlinScenarioRingCarfree.class);
 
 	public static void main(String[] args) {
 
@@ -80,6 +82,8 @@ public final class RunBerlinScenario {
 		Config config = prepareConfig(args);
 		Scenario scenario = prepareScenario(config);
 		Controler controler = prepareControler(scenario);
+
+		PrepareNetworkCarfreeRing.makeLinksInRingCarfree(scenario.getNetwork());
 
 		controler.run();
 	}
@@ -101,8 +105,8 @@ public final class RunBerlinScenario {
 			});
 		} else {
 			log.warn("Public transit will be teleported and not simulated in the mobsim! "
-				+ "This will have a significant effect on pt-related parameters (travel times, modal split, and so on). "
-				+ "Should only be used for testing or car-focused studies with a fixed modal split.  ");
+					+ "This will have a significant effect on pt-related parameters (travel times, modal split, and so on). "
+					+ "Should only be used for testing or car-focused studies with a fixed modal split.  ");
 		}
 
 
@@ -230,18 +234,18 @@ public final class RunBerlinScenario {
 		}
 
 		String[] args = new String[]{
-			config.controler().getOutputDirectory(),
-			config.controler().getRunId(),
-			"null", // TODO: reference run, hard to automate
-			"null", // TODO: reference run, hard to automate
-			config.global().getCoordinateSystem(),
-			"https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/berlin/projects/avoev/shp-files/shp-bezirke/bezirke_berlin.shp",
-			TransformationFactory.DHDN_GK4,
-			"SCHLUESSEL",
-			"home",
-			"10", // TODO: scaling factor, should be 10 for 10pct scenario and 100 for 1pct scenario
-			"null", // visualizationScriptInputDirectory
-			modesString
+				config.controler().getOutputDirectory(),
+				config.controler().getRunId(),
+				"null", // TODO: reference run, hard to automate
+				"null", // TODO: reference run, hard to automate
+				config.global().getCoordinateSystem(),
+				"https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/berlin/projects/avoev/shp-files/shp-bezirke/bezirke_berlin.shp",
+				TransformationFactory.DHDN_GK4,
+				"SCHLUESSEL",
+				"home",
+				"10", // TODO: scaling factor, should be 10 for 10pct scenario and 100 for 1pct scenario
+				"null", // visualizationScriptInputDirectory
+				modesString
 		};
 
 		try {

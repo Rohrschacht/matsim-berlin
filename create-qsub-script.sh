@@ -10,8 +10,8 @@ echo "#!/bin/bash --login
 #$ -j y
 #$ -o ${JOB_LOG:=$RUN_ID.log}
 #$ -l h_rt=80000
-#$ -l mem_free=16G
-#$ -pe mp 4
+#$ -l mem_free=8G
+#$ -pe mp 8
 
 # make sure java is present
 module add java/${JAVA_VERSION:=11}
@@ -24,9 +24,8 @@ java -version
 
 # start matsim
 java --class-path ${JAR:=./matsim-berlin.jar} \
-  -Xmx16G '${MAIN_CLASS:=org.matsim.run.RunBerlinScenario}' \
+  -Xmx64G '${MAIN_CLASS:=org.matsim.run.RunBerlinScenario}' \
   ${CONFIG:=./input/config.xml} \
   '--config:controler.runId' ${RUN_ID} \
   '--config:controler.outputDirectory' ${OUTPUT_DIR}
 "
-
