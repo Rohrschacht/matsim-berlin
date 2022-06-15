@@ -2,7 +2,7 @@
 
 # print a qsub script file based on env, git email or defaults
 
-echo "#!/bin/bash -login
+echo "#!/bin/bash --login
 #$ -cwd
 #$ -N ${RUN_ID:=matsim-example}
 #$ -m be
@@ -10,8 +10,8 @@ echo "#!/bin/bash -login
 #$ -j y
 #$ -o ${JOB_LOG:=$RUN_ID.log}
 #$ -l h_rt=80000
-#$ -l mem_free=4G
-#$ -pe mp 2
+#$ -l mem_free=16G
+#$ -pe mp 4
 
 # make sure java is present
 module add java/${JAVA_VERSION:=11}
@@ -24,7 +24,7 @@ java -version
 
 # start matsim
 java --class-path ${JAR:=./matsim-berlin.jar} \
-  -Xmx4G '${MAIN_CLASS:=org.matsim.run.RunBerlinScenario}' \
+  -Xmx16G '${MAIN_CLASS:=org.matsim.run.RunBerlinScenario}' \
   ${CONFIG:=./input/config.xml} \
   '--config:controler.runId' ${RUN_ID} \
   '--config:controler.outputDirectory' ${OUTPUT_DIR}
