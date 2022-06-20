@@ -25,13 +25,7 @@ public class PrepareNetworkCarfreeRing {
 
 		for (var link : network.getLinks().values()) {
 			if (coordinateUtils.isCoordInGeometry(link.getCoord(), umweltzone)) {
-				var allowedModes = link.getAllowedModes();
-				if (allowedModes.contains(TransportMode.car)) {
-					var newAllowedModes = new HashSet<>(allowedModes);
-					newAllowedModes.remove(TransportMode.car);
-					newAllowedModes.add(TransportMode.bike);
-					link.setAllowedModes(newAllowedModes);
-				}
+				link.setCapacity(0.01);
 			}
 		}
 	}
