@@ -47,6 +47,7 @@ import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.scoring.functions.ScoringParametersForPerson;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.prepare.homework1.PrepareNetworkCarfreeRing;
+import org.matsim.prepare.homework1.PreparePlansCarfreeRing;
 import org.matsim.prepare.population.AssignIncome;
 import org.matsim.run.BerlinExperimentalConfigGroup;
 import org.matsim.run.drt.OpenBerlinIntermodalPtDrtRouterModeIdentifier;
@@ -84,6 +85,7 @@ public final class RunBerlinScenarioRingCarfree {
 		Controler controler = prepareControler(scenario);
 
 		PrepareNetworkCarfreeRing.makeLinksInRingCarfree(scenario.getNetwork());
+		PreparePlansCarfreeRing.makePlansInRingCarfree(scenario.getPopulation(), scenario.getNetwork());
 
 		controler.run();
 	}
