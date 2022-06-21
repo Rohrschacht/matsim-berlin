@@ -7,6 +7,7 @@ import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
+import org.matsim.core.utils.gis.ShapeFileReader;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,5 +40,10 @@ public class CoordinateGeometryUtils {
 		return activities.stream()
 				.filter(activity -> isActivityInGeometry(activity, geometry))
 				.count();
+	}
+
+	public static Geometry getUmweltzone() {
+		var shapeFileName = "shapes/Umweltzone.shp";
+		return (Geometry) ShapeFileReader.getAllFeatures(shapeFileName).stream().findFirst().get().getDefaultGeometry();
 	}
 }
