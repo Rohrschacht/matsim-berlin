@@ -1,12 +1,12 @@
 package org.matsim.prepare.homework1;
 
-import org.locationtech.jts.geom.Geometry;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.utils.gis.ShapeFileReader;
 
 import java.util.HashSet;
+
+import static org.matsim.prepare.homework1.CoordinateGeometryUtils.getUmweltzone;
 
 public class PrepareNetworkCarfreeRing {
 	public static void main(String[] args) {
@@ -20,8 +20,7 @@ public class PrepareNetworkCarfreeRing {
 	}
 
 	public static void makeLinksInRingCarfree(Network network) {
-		var shapeFileName = "shapes/Umweltzone.shp";
-		var umweltzone = (Geometry) ShapeFileReader.getAllFeatures(shapeFileName).stream().findFirst().get().getDefaultGeometry();
+		var umweltzone = getUmweltzone();
 		var coordinateUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE);
 
 		for (var link : network.getLinks().values()) {
