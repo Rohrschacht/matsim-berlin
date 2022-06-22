@@ -38,6 +38,7 @@ import org.matsim.core.config.groups.QSimConfigGroup.TrafficDynamics;
 import org.matsim.core.config.groups.VspExperimentalConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
+import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.gbl.MatsimRandom;
@@ -188,14 +189,15 @@ public final class RunBerlinScenarioRingCarfree {
 		final Config config = ConfigUtils.loadConfig(args[0], customModulesAll);
 
 		config.controler().setRoutingAlgorithmType(FastAStarLandmarks);
+		config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.overwriteExistingFiles);
 
 		config.subtourModeChoice().setProbaForRandomSingleTripMode(0.5);
 
 		config.plansCalcRoute().setRoutingRandomness(3.);
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.ride);
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.pt);
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.bike);
-		config.plansCalcRoute().removeModeRoutingParams("undefined");
+		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.ride);
+		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.pt);
+		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.bike);
+		config.plansCalcRoute().removeTeleportedModeParams("undefined");
 
 		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles(true);
 
