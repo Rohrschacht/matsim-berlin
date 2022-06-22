@@ -67,8 +67,11 @@ public class PreparePlansCarfreeRing {
 
 					for (Leg leg : trip.getLegsOnly()) {
 						var mode = leg.getAttributes().getAttribute("routingMode");
+						if (TransportMode.car.equals(leg.getMode())) {
+							leg.setMode("bicycle");
+						}
 						if (TransportMode.car.equals(mode)) {
-							leg.getAttributes().putAttribute("routingMode", TransportMode.bike);
+							leg.getAttributes().putAttribute("routingMode", "bicycle");
 						}
 					}
 					trip.getTripElements()
@@ -76,7 +79,7 @@ public class PreparePlansCarfreeRing {
 						.filter(planElement -> planElement instanceof Activity)
 						.map(planElement -> ((Activity) planElement))
 						.filter(activity -> "car interaction".equals(activity.getType()))
-						.forEach(activity -> activity.setType("bike interaction"));
+						.forEach(activity -> activity.setType("bicycle interaction"));
 				}
 			}
 		}
