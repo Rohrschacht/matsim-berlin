@@ -8,6 +8,9 @@ import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.Config;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.router.TripStructureUtils;
+
+import java.util.function.Predicate;
 
 import static org.matsim.prepare.homework1.CoordinateGeometryUtils.getUmweltzone;
 import static org.matsim.run.RunBerlinScenario.*;
@@ -29,6 +32,7 @@ public class PreparePlansCarfreeRing {
 		var PlanOutfileName = "scenarios/berlin-v5.5-1pct/output/berlin-v5.5-1pct.carfree_ring_plan.xml.gz";
 
 
+
 		var population = scenario.getPopulation();
 
 		// write original population
@@ -46,59 +50,35 @@ public class PreparePlansCarfreeRing {
 
 		for (Person person : population.getPersons().values()) {
 
-//			System.out.println("attr:" + person.getAttributes().toString());
-//
-//			System.out.println("legs: " + person.getAttributes().getAttribute("legs"));
-//
-//			System.out.println("plan attr" + person.getSelectedPlan().getAttributes().toString());
-//			System.out.println("plan elem" + person.getSelectedPlan().getPlanElements().toString());
-//
-//			person.getSelectedPlan().getPlanElements().forEach(planElement -> System.out.println("sfkjd " + planElement));
-//
-//			System.out.println(person.getPlans().size());
+			person.getSelectedPlan();
 
 			for (Plan plan : person.getPlans()) {
-				Activity carInteraction = null;
-				boolean wasCar = false;
 
-				for (PlanElement elem : plan.getPlanElements()) {
-					if (elem instanceof Leg) {
-						Leg leg = (Leg) elem;
-						if (leg.getMode().equals(TransportMode.car)) {
-							if (coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(), umweltzone) || coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone)) {
-								leg.setMode(TransportMode.bike);
-								leg.setRoute(null);
-								wasCar = true;
-								if (carInteraction != null) {
-									carInteraction.setType("bike interaction");
-								}
-							}
-						} else {
-							wasCar = false;
-						}
-					} else if (elem instanceof Activity) {
-						Activity activity = (Activity) elem;
-						if (activity.getType().equals("car interaction")) {
-							carInteraction = activity;
-							if (wasCar) {
-								carInteraction.setType("bike interaction");
-							}
+				var trips = TripStructureUtils.getTrips(plan);
+				var legs = TripStructureUtils.getLegs(plan);
+
+				Predicate<Leg> isLegInGeometry = (leg) -> coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(), umweltzone) || coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
+
+				for (TripStructureUtils.Trip trip : trips) {
+					// has to be done trip-wise since the routing mode has to be consistent per trip
+					boolean changeToBike = trip.getLegsOnly().stream().anyMatch(isLegInGeometry);
+					if (!changeToBike)
+						continue;
+
+					for (Leg leg : trip.getLegsOnly()) {
+						var mode = leg.getAttributes().getAttribute("routingMode");
+						if (TransportMode.car.equals(mode)) {
+							leg.getAttributes().putAttribute("routingMode", TransportMode.bike);
 						}
 					}
+					trip.getTripElements()
+						.stream()
+						.filter(planElement -> planElement instanceof Activity)
+						.map(planElement -> ((Activity) planElement))
+						.filter(activity -> "car interaction".equals(activity.getType()))
+						.forEach(activity -> activity.setType("bike interaction"));
 				}
 			}
-
-//			person.getSelectedPlan()
-//				.getPlanElements()
-//				.stream()
-//				.filter(elem -> elem instanceof Leg)
-//				.map(elem -> (Leg)elem)
-//				.filter(leg -> coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(), umweltzone) || coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone))
-//				.filter(leg -> leg.getMode().equals(TransportMode.car))
-//				.forEach(leg -> {
-//					leg.setMode(TransportMode.bike);
-//				});
-
 		}
 	}
 }
