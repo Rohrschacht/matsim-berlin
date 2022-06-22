@@ -67,6 +67,7 @@ public class PreparePlansCarfreeRing {
 						if (leg.getMode().equals(TransportMode.car)) {
 							if (coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(), umweltzone) || coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone)) {
 								leg.setMode(TransportMode.bike);
+								leg.setRoute(null);
 								wasCar = true;
 								if (carInteraction != null) {
 									carInteraction.setType("bike interaction");
