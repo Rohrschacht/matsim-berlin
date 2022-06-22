@@ -197,6 +197,7 @@ public final class RunBerlinScenarioRingCarfree {
 		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.ride);
 		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.pt);
 		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.bike);
+		config.plansCalcRoute().removeTeleportedModeParams("bicycle");
 		config.plansCalcRoute().removeTeleportedModeParams("undefined");
 
 		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles(true);
