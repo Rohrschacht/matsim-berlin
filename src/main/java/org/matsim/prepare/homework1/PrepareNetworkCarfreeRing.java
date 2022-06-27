@@ -29,7 +29,7 @@ public class PrepareNetworkCarfreeRing {
 				if (allowedModes.contains(TransportMode.car)) {
 					var newAllowedModes = new HashSet<>(allowedModes);
 					newAllowedModes.remove(TransportMode.car);
-					newAllowedModes.add(TransportMode.bike);
+					newAllowedModes.add("bicycle");
 					link.setAllowedModes(newAllowedModes);
 				}
 			}

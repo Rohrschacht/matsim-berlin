@@ -27,6 +27,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.Person;
+import org.matsim.contrib.bicycle.BicycleConfigGroup;
 import org.matsim.contrib.drt.routing.DrtRoute;
 import org.matsim.contrib.drt.routing.DrtRouteFactory;
 import org.matsim.core.config.Config;
@@ -46,6 +47,7 @@ import org.matsim.core.population.routes.RouteFactories;
 import org.matsim.core.router.AnalysisMainModeIdentifier;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.scoring.functions.ScoringParametersForPerson;
+import org.matsim.core.utils.collections.CollectionUtils;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.prepare.homework1.PrepareNetworkCarfreeRing;
 import org.matsim.prepare.homework1.PreparePlansCarfreeRing;
@@ -56,9 +58,7 @@ import org.matsim.run.drt.RunDrtOpenBerlinScenario;
 import playground.vsp.scoring.IncomeDependentUtilityOfMoneyPersonScoringParameters;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorithmType.FastAStarLandmarks;
 
@@ -84,6 +84,30 @@ public final class RunBerlinScenarioRingCarfree {
 		Config config = prepareConfig(args);
 		Scenario scenario = prepareScenario(config);
 		Controler controler = prepareControler(scenario);
+
+		config.controler().setLastIteration(2);
+		{
+			List<String> modes = new ArrayList<>(config.plansCalcRoute().getNetworkModes());
+			log.info("prev Network modes: [ " + modes.stream().reduce((s, s2) -> s + ", " + s2).orElse("") + " ]");
+			modes.add("bicycle");
+			config.plansCalcRoute().setNetworkModes(Collections.unmodifiableList(modes));
+		}
+		{
+			var modes = CollectionUtils.stringArrayToSet(config.changeMode().getModes());
+			log.info("prev Change modes: [ " + modes.stream().reduce((s, s2) -> s + ", " + s2).orElse("") + " ]");
+			modes.add("bicycle");
+			config.changeMode().setModes(CollectionUtils.collectionToStringArray(modes));
+		}
+		{
+			var modes = new ArrayList<>(config.qsim().getMainModes());
+			log.info("prev qsim main modes: [ " + modes.stream().reduce((s, s2) -> s + ", " + s2).orElse("") + " ]");
+			modes.add("bicycle");
+			config.qsim().setMainModes(Collections.unmodifiableCollection(modes));
+		}
+		{
+			log.info("vehicle source: " + config.qsim().getVehiclesSource());
+			//config.qsim().setVehiclesSource(QSimConfigGroup.VehiclesSource.);
+		}
 
 		PrepareNetworkCarfreeRing.makeLinksInRingCarfree(scenario.getNetwork());
 		PreparePlansCarfreeRing.makePlansInRingCarfree(scenario.getPopulation(), scenario.getNetwork());
@@ -167,25 +191,22 @@ public final class RunBerlinScenarioRingCarfree {
 
 		String[] typedArgs = Arrays.copyOfRange(args, 1, args.length);
 
-		ConfigGroup[] customModulesToAdd;
-		if (additionalInformation == RunDrtOpenBerlinScenario.AdditionalInformation.acceptUnknownParamsBerlinConfig) {
-			customModulesToAdd = new ConfigGroup[]{new BerlinExperimentalConfigGroup(true)};
-		} else {
-			customModulesToAdd = new ConfigGroup[]{new BerlinExperimentalConfigGroup(false)};
-		}
-		ConfigGroup[] customModulesAll = new ConfigGroup[customModules.length + customModulesToAdd.length];
+		ConfigGroup[] customModulesAll;
+		{
+			List<ConfigGroup> combinedCustomModules = new ArrayList<>(Arrays.asList(customModules));
 
-		int counter = 0;
-		for (ConfigGroup customModule : customModules) {
-			customModulesAll[counter] = customModule;
-			counter++;
-		}
+			if (additionalInformation == RunDrtOpenBerlinScenario.AdditionalInformation.acceptUnknownParamsBerlinConfig) {
+				combinedCustomModules.add(new BerlinExperimentalConfigGroup(true));
+			} else {
+				combinedCustomModules.add(new BerlinExperimentalConfigGroup(false));
+			}
 
-		for (ConfigGroup customModule : customModulesToAdd) {
-			customModulesAll[counter] = customModule;
-			counter++;
-		}
+			BicycleConfigGroup bicycleConfigGroup = new BicycleConfigGroup();
+			bicycleConfigGroup.setBicycleMode("bicycle");
+			combinedCustomModules.add(bicycleConfigGroup);
 
+			customModulesAll = combinedCustomModules.toArray(new ConfigGroup[0]);
+		}
 		final Config config = ConfigUtils.loadConfig(args[0], customModulesAll);
 
 		config.controler().setRoutingAlgorithmType(FastAStarLandmarks);
