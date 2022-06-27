@@ -94,7 +94,7 @@ public final class AnalysisCarFreeScenario {
 				Route route = leg.getRoute();
 
 				analyzedPerson.legModeTravelTime.merge(leg.getMode(), route.getTravelTime().seconds(), Double::sum);
-				analyzedPerson.legModeTravelTime.merge(leg.getMode(), route.getDistance(), Double::sum);
+				analyzedPerson.legModeDistance.merge(leg.getMode(), route.getDistance(), Double::sum);
 			}
 			analyzedPerson.isAffected = AffectedAgents.isAffected(person.getSelectedPlan(), shapeUmweltzone, geometryUtils);
 
