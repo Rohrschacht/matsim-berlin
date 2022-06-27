@@ -23,18 +23,9 @@ public class AffectedAgents {
 		for (Person person : population.getPersons().values()) {
 			for (Plan plan : person.getPlans()) {
 				for (Leg leg : TripStructureUtils.getLegs(plan.getPlanElements())) {
-					if (coordinateUtils.isLegInGeometry(leg, geometry)) {
-						if (transportModes.length == 0) { // default all
-							affectedPersons.add(person);
-							continue persons; // this person is affected, continue with next
-						} else {
-							for (String mode : transportModes) {
-								if (leg.getMode().equals(mode)) {
-									affectedPersons.add(person);
-									continue persons; // this person is affected, continue with next
-								}
-							}
-						}
+					if (legAffected(geometry, coordinateUtils, leg, transportModes)) {
+						affectedPersons.add(person);
+						continue persons; // this person is affected, continue with next
 					}
 				}
 			}
@@ -54,23 +45,29 @@ public class AffectedAgents {
 		persons:
 		for (Person person : population.getPersons().values()) {
 			for (Leg leg : TripStructureUtils.getLegs(person.getSelectedPlan().getPlanElements())) {
-				if (coordinateUtils.isLegInGeometry(leg, geometry)) {
-					if (transportModes.length == 0) { // default all
-						affectedPersons.add(person);
-						continue persons; // this person is affected, continue with next
-					} else {
-						for (String mode : transportModes) {
-							if (leg.getMode().equals(mode)) {
-								affectedPersons.add(person);
-								continue persons; // this person is affected, continue with next
-							}
-						}
-					}
+				if (legAffected(geometry, coordinateUtils, leg, transportModes)) {
+					affectedPersons.add(person);
+					continue persons; // this person is affected, continue with next
 				}
 			}
 		}
 
 		return affectedPersons;
+	}
+
+	private static boolean legAffected(Geometry geometry, CoordinateGeometryUtils coordinateUtils, Leg leg, String[] transportModes) {
+		if (coordinateUtils.isLegInGeometry(leg, geometry)) {
+			if (transportModes.length == 0) { // default all
+				return true;
+			} else {
+				for (String mode : transportModes) {
+					if (leg.getMode().equals(mode)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 }
