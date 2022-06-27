@@ -12,7 +12,7 @@ import java.util.Set;
 public class AffectedAgents {
 
 	/**
-	 * Return all persons, which have a plan within the given geometry.
+	 * Return all persons, which have a plan within the given geometry. (and optionally
 	 */
 	public static Set<Person> fromGeometry(Population population, Network network, Geometry geometry, String... transportModes) {
 		var coordinateUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE, network);
@@ -35,7 +35,7 @@ public class AffectedAgents {
 	}
 
 	/**
-	 * Return all persons, which have a plan within the given geometry. And vehicle types.
+	 * Return all persons, which have a <strong>selected</strong> plan within the given geometry.
 	 */
 	public static Set<Person> fromGeometrySelectedPlansOnly(Population population, Network network, Geometry geometry, String... transportModes) {
 		var coordinateUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE, network);
