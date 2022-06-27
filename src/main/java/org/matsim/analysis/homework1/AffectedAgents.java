@@ -1,4 +1,4 @@
-package org.matsim.analysis;
+package org.matsim.analysis.homework1;
 
 import org.locationtech.jts.geom.Geometry;
 import org.matsim.api.core.v01.network.Network;
