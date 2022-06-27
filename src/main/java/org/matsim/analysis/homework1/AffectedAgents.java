@@ -50,7 +50,7 @@ public class AffectedAgents {
 		return affectedPersons;
 	}
 
-	public static boolean isAffected(Plan plan, Geometry geometry, CoordinateGeometryUtils coordinateUtils, String[] transportModes) {
+	public static boolean isAffected(Plan plan, Geometry geometry, CoordinateGeometryUtils coordinateUtils, String... transportModes) {
 		for (Leg leg : TripStructureUtils.getLegs(plan.getPlanElements())) {
 			if (legAffected(geometry, coordinateUtils, leg, transportModes)) {
 				return true;
@@ -59,7 +59,7 @@ public class AffectedAgents {
 		return false;
 	}
 
-	private static boolean legAffected(Geometry geometry, CoordinateGeometryUtils coordinateUtils, Leg leg, String[] transportModes) {
+	private static boolean legAffected(Geometry geometry, CoordinateGeometryUtils coordinateUtils, Leg leg, String... transportModes) {
 		if (coordinateUtils.isLegInGeometry(leg, geometry)) {
 			if (transportModes.length == 0) { // default all
 				return true;
