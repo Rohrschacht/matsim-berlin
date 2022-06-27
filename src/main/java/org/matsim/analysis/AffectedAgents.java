@@ -22,11 +22,9 @@ public class AffectedAgents {
 		persons:
 		for (Person person : population.getPersons().values()) {
 			for (Plan plan : person.getPlans()) {
-				for (Leg leg : TripStructureUtils.getLegs(plan.getPlanElements())) {
-					if (legAffected(geometry, coordinateUtils, leg, transportModes)) {
-						affectedPersons.add(person);
-						continue persons; // this person is affected, continue with next
-					}
+				if (isAffected(plan, geometry, coordinateUtils, transportModes)) {
+					affectedPersons.add(person);
+					continue persons; // this person is affected, continue with next
 				}
 			}
 		}
@@ -42,17 +40,23 @@ public class AffectedAgents {
 
 		var affectedPersons = new HashSet<Person>();
 
-		persons:
 		for (Person person : population.getPersons().values()) {
-			for (Leg leg : TripStructureUtils.getLegs(person.getSelectedPlan().getPlanElements())) {
-				if (legAffected(geometry, coordinateUtils, leg, transportModes)) {
-					affectedPersons.add(person);
-					continue persons; // this person is affected, continue with next
-				}
-			}
+			if (isAffected(person.getSelectedPlan(), geometry, coordinateUtils, transportModes)) {
+				affectedPersons.add(person);
+				continue;
+			};
 		}
 
 		return affectedPersons;
+	}
+
+	public static boolean isAffected(Plan plan, Geometry geometry, CoordinateGeometryUtils coordinateUtils, String[] transportModes) {
+		for (Leg leg : TripStructureUtils.getLegs(plan.getPlanElements())) {
+			if (legAffected(geometry, coordinateUtils, leg, transportModes)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static boolean legAffected(Geometry geometry, CoordinateGeometryUtils coordinateUtils, Leg leg, String[] transportModes) {
