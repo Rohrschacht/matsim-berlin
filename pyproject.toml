@@ -9,6 +9,7 @@ python = "^3.8"
 pandas = "^1.4.3"
 matplotlib = "^3.5.2"
 jupyter = "^1.0.0"
+pyproj = "^3.3.1"
 
 [tool.poetry.dev-dependencies]
 
