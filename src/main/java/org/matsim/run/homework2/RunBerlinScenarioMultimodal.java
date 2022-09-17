@@ -53,10 +53,12 @@ import org.matsim.prepare.population.AssignIncome;
 import org.matsim.run.BerlinExperimentalConfigGroup;
 import org.matsim.run.drt.OpenBerlinIntermodalPtDrtRouterModeIdentifier;
 import org.matsim.run.drt.RunDrtOpenBerlinScenario;
+import org.matsim.vehicles.Vehicle;
 import playground.vsp.scoring.IncomeDependentUtilityOfMoneyPersonScoringParameters;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -80,14 +82,18 @@ public final class RunBerlinScenarioMultimodal {
 			args = new String[]{"scenarios/berlin-v5.5-1pct/input/berlin-v5.5-1pct.config.xml"};
 		}
 
+		MultiModalConfigGroup multiModalConfigGroup = new MultiModalConfigGroup();
+//		multiModalConfigGroup.setSimulatedModes("bike,bicycle,walk");
+		multiModalConfigGroup.setCreateMultiModalNetwork(true);
+		multiModalConfigGroup.setMultiModalSimulationEnabled(true);
 
-		Config config = prepareConfig(args, new MultiModalConfigGroup());
-		{
-			PlansCalcRouteConfigGroup.TeleportedModeParams params = new PlansCalcRouteConfigGroup.TeleportedModeParams("bike");
-			params.setTeleportedModeSpeed(3.1388889);
-			params.setBeelineDistanceFactor(1.3);
-			config.plansCalcRoute().addTeleportedModeParams(params);
-		}
+		Config config = prepareConfig(args, multiModalConfigGroup);
+//		{
+//			PlansCalcRouteConfigGroup.TeleportedModeParams params = new PlansCalcRouteConfigGroup.TeleportedModeParams("bike");
+//			params.setTeleportedModeSpeed(3.1388889);
+//			params.setBeelineDistanceFactor(1.3);
+//			config.plansCalcRoute().addTeleportedModeParams(params);
+//		}
 		Scenario scenario = prepareScenario(config);
 		PrepareMultiModalScenario.run(scenario);
 		Controler controler = prepareControler(scenario);
@@ -95,9 +101,22 @@ public final class RunBerlinScenarioMultimodal {
 
 		config.travelTimeCalculator().setFilterModes(true);
 
+		scenario.getPopulation().getPersons().values().forEach(RunBerlinScenarioMultimodal::fixVehicles);
+
 		config.controler().setLastIteration(2);
 
+//		NetworkUtils.writeNetwork(scenario.getNetwork(), "multimodal-network");
+
 		controler.run();
+	}
+
+	public static void fixVehicles(Person person) {
+		Map<String, Id<Vehicle>> vehicleIds = new HashMap<>();
+		vehicleIds.put("walk", Id.createVehicleId(person.getId().toString() + "-walk"));
+		vehicleIds.put("car", Id.createVehicleId(person.getId().toString() + "-car"));
+		vehicleIds.put("bike", Id.createVehicleId(person.getId().toString() + "-bike"));
+		vehicleIds.put("bicycle", Id.createVehicleId(person.getId().toString() + "-bicycle"));
+		person.getAttributes().putAttribute("vehicles", vehicleIds);
 	}
 
 	public static Controler prepareControler(Scenario scenario) {
