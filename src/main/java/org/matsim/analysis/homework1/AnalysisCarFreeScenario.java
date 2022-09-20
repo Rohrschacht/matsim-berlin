@@ -9,6 +9,7 @@ import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Route;
+import org.matsim.core.events.EventsUtils;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.population.routes.NetworkRoute;
@@ -56,6 +57,9 @@ public final class AnalysisCarFreeScenario {
 		var population =
 			PopulationUtils.readPopulation(String.format("output/%s/%s.output_plans.xml.gz",
 				scenarioName, scenarioName));
+
+
+		var events = EventsUtils.readEvents(EventsUtils.createEventsManager(), "output/%s/%s.output_events.xml.gz");
 
 		var network = NetworkUtils.readNetwork(String.format("output/%s/%s.output_network.xml.gz",
 			scenarioName, scenarioName));

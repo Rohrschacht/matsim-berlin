@@ -192,7 +192,7 @@ public final class RunBerlinScenarioRingCarfree {
 		config.plansCalcRoute().setRoutingRandomness(3.);
 		config.plansCalcRoute().removeModeRoutingParams(TransportMode.ride);
 		config.plansCalcRoute().removeModeRoutingParams(TransportMode.pt);
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.bike);
+		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.bike);
 		config.plansCalcRoute().removeModeRoutingParams("undefined");
 
 		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles(true);
