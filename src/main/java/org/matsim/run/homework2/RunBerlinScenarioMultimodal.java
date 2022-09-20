@@ -224,7 +224,7 @@ public final class RunBerlinScenarioMultimodal {
 		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.ride);
 		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.pt);
 		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.bike);
-		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.walk);
+		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.walk); // ? Fishy, TODO
 		config.plansCalcRoute().removeTeleportedModeParams("undefined");
 
 		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles(true);
