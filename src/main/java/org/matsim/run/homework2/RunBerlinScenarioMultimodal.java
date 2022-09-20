@@ -221,10 +221,11 @@ public final class RunBerlinScenarioMultimodal {
 		config.subtourModeChoice().setProbaForRandomSingleTripMode(0.5);
 
 		config.plansCalcRoute().setRoutingRandomness(3.);
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.ride);
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.pt);
-		//config.plansCalcRoute().removeModeRoutingParams(TransportMode.bike);
-		config.plansCalcRoute().removeModeRoutingParams("undefined");
+		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.ride);
+		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.pt);
+		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.bike);
+		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.walk);
+		config.plansCalcRoute().removeTeleportedModeParams("undefined");
 
 		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles(true);
 
