@@ -223,7 +223,7 @@ public final class RunBerlinScenarioMultimodal {
 		config.plansCalcRoute().setRoutingRandomness(3.);
 		config.plansCalcRoute().removeModeRoutingParams(TransportMode.ride);
 		config.plansCalcRoute().removeModeRoutingParams(TransportMode.pt);
-//		config.plansCalcRoute().removeModeRoutingParams(TransportMode.bike);
+		//config.plansCalcRoute().removeModeRoutingParams(TransportMode.bike);
 		config.plansCalcRoute().removeModeRoutingParams("undefined");
 
 		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles(true);
