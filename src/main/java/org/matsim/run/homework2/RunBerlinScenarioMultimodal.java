@@ -79,7 +79,7 @@ public final class RunBerlinScenarioMultimodal {
 		}
 
 		if (args.length == 0) {
-			args = new String[]{"scenarios/berlin-v5.5-1pct/input/berlin-v5.5-1pct.config.xml"};
+			args = new String[]{"scenarios/homework2-jbr/input/homework2-config.xml"};
 		}
 
 		MultiModalConfigGroup multiModalConfigGroup = new MultiModalConfigGroup();
@@ -97,11 +97,11 @@ public final class RunBerlinScenarioMultimodal {
 		Scenario scenario = prepareScenario(config);
 		PrepareMultiModalScenario.run(scenario);
 		Controler controler = prepareControler(scenario);
-		controler.addOverridingModule(new MultiModalModule());
+		//controler.addOverridingModule(new MultiModalModule());
 
 		config.travelTimeCalculator().setFilterModes(true);
 
-		scenario.getPopulation().getPersons().values().forEach(RunBerlinScenarioMultimodal::fixVehicles);
+		//scenario.getPopulation().getPersons().values().forEach(RunBerlinScenarioMultimodal::fixVehicles);
 
 		config.controler().setLastIteration(2);
 
