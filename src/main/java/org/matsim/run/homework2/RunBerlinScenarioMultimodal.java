@@ -26,11 +26,11 @@ import org.matsim.analysis.RunPersonTripAnalysis;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.drt.routing.DrtRoute;
 import org.matsim.contrib.drt.routing.DrtRouteFactory;
-import org.matsim.contrib.multimodal.MultiModalModule;
-import org.matsim.contrib.multimodal.config.MultiModalConfigGroup;
 import org.matsim.contrib.multimodal.tools.PrepareMultiModalScenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
@@ -53,14 +53,10 @@ import org.matsim.prepare.population.AssignIncome;
 import org.matsim.run.BerlinExperimentalConfigGroup;
 import org.matsim.run.drt.OpenBerlinIntermodalPtDrtRouterModeIdentifier;
 import org.matsim.run.drt.RunDrtOpenBerlinScenario;
-import org.matsim.vehicles.Vehicle;
 import playground.vsp.scoring.IncomeDependentUtilityOfMoneyPersonScoringParameters;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorithmType.FastAStarLandmarks;
 
@@ -82,12 +78,13 @@ public final class RunBerlinScenarioMultimodal {
 			args = new String[]{"scenarios/homework2-jbr/input/homework2-config.xml"};
 		}
 
-		MultiModalConfigGroup multiModalConfigGroup = new MultiModalConfigGroup();
+//		MultiModalConfigGroup multiModalConfigGroup = new MultiModalConfigGroup();
 //		multiModalConfigGroup.setSimulatedModes("bike,bicycle,walk");
-		multiModalConfigGroup.setCreateMultiModalNetwork(true);
-		multiModalConfigGroup.setMultiModalSimulationEnabled(true);
+//		multiModalConfigGroup.setCreateMultiModalNetwork(true);
+//		multiModalConfigGroup.setMultiModalSimulationEnabled(true);
 
-		Config config = prepareConfig(args, multiModalConfigGroup);
+//		Config config = prepareConfig(args, multiModalConfigGroup);
+		Config config = prepareConfig(args);
 //		{
 //			PlansCalcRouteConfigGroup.TeleportedModeParams params = new PlansCalcRouteConfigGroup.TeleportedModeParams("bike");
 //			params.setTeleportedModeSpeed(3.1388889);
@@ -95,13 +92,15 @@ public final class RunBerlinScenarioMultimodal {
 //			config.plansCalcRoute().addTeleportedModeParams(params);
 //		}
 		Scenario scenario = prepareScenario(config);
+		analyzeNetworkLinkTypes(scenario.getNetwork());
+		allowBikeWalkOnNetwork(scenario.getNetwork());
 		PrepareMultiModalScenario.run(scenario);
 		Controler controler = prepareControler(scenario);
 		//controler.addOverridingModule(new MultiModalModule());
 
 		config.travelTimeCalculator().setFilterModes(true);
 
-		//scenario.getPopulation().getPersons().values().forEach(RunBerlinScenarioMultimodal::fixVehicles);
+//		NetworkUtils.writeNetwork(scenario.getNetwork(), "multimodal-withbikewalk-3.xml");
 
 		config.controler().setLastIteration(2);
 
@@ -110,13 +109,41 @@ public final class RunBerlinScenarioMultimodal {
 		controler.run();
 	}
 
-	public static void fixVehicles(Person person) {
-		Map<String, Id<Vehicle>> vehicleIds = new HashMap<>();
-		vehicleIds.put("walk", Id.createVehicleId(person.getId().toString() + "-walk"));
-		vehicleIds.put("car", Id.createVehicleId(person.getId().toString() + "-car"));
-		vehicleIds.put("bike", Id.createVehicleId(person.getId().toString() + "-bike"));
-		vehicleIds.put("bicycle", Id.createVehicleId(person.getId().toString() + "-bicycle"));
-		person.getAttributes().putAttribute("vehicles", vehicleIds);
+	public static void allowBikeWalkOnNetwork(Network network) {
+		for (Link link : network.getLinks().values()) {
+			if (link.getAllowedModes().size() == 1 && link.getAllowedModes().contains(TransportMode.pt))
+				continue;
+			String type = (String) link.getAttributes().getAttribute("type");
+//			if (type != null) {
+//				switch (type) {
+//					case "test":
+//					case "motorway_link":
+//					case "motorway":
+//						continue;
+//				}
+//			}
+			addBikeWalkToLink(link);
+		}
+	}
+
+	public static void addBikeWalkToLink(Link link) {
+		Set<String> allowedModes = link.getAllowedModes();
+		Set<String> allowedModesMut = new HashSet<>(allowedModes);
+		if (!allowedModes.contains(TransportMode.bike)) {
+			allowedModesMut.add(TransportMode.bike);
+		}
+		if (!allowedModes.contains(TransportMode.walk)) {
+			allowedModesMut.add(TransportMode.walk);
+		}
+		link.setAllowedModes(allowedModesMut);
+	}
+
+	public static void analyzeNetworkLinkTypes(Network network) {
+		Set<String> linkTypes = new HashSet<>();
+		for (Link link : network.getLinks().values()) {
+			linkTypes.add((String) link.getAttributes().getAttribute("type"));
+		}
+		System.out.println(linkTypes);
 	}
 
 	public static Controler prepareControler(Scenario scenario) {
