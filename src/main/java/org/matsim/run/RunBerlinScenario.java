@@ -81,6 +81,8 @@ public final class RunBerlinScenario {
 		Scenario scenario = prepareScenario(config);
 		Controler controler = prepareControler(scenario);
 
+		config.controler().setLastIteration(2);
+
 		controler.run();
 	}
 
