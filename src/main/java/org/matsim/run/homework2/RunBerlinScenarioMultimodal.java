@@ -31,6 +31,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.drt.routing.DrtRoute;
 import org.matsim.contrib.drt.routing.DrtRouteFactory;
+import org.matsim.contrib.multimodal.MultiModalModule;
 import org.matsim.contrib.multimodal.tools.PrepareMultiModalScenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
@@ -53,6 +54,7 @@ import org.matsim.prepare.population.AssignIncome;
 import org.matsim.run.BerlinExperimentalConfigGroup;
 import org.matsim.run.drt.OpenBerlinIntermodalPtDrtRouterModeIdentifier;
 import org.matsim.run.drt.RunDrtOpenBerlinScenario;
+import org.matsim.vehicles.Vehicle;
 import playground.vsp.scoring.IncomeDependentUtilityOfMoneyPersonScoringParameters;
 
 import java.io.IOException;
@@ -92,11 +94,12 @@ public final class RunBerlinScenarioMultimodal {
 //			config.plansCalcRoute().addTeleportedModeParams(params);
 //		}
 		Scenario scenario = prepareScenario(config);
+		scenario.getPopulation().getPersons().values().forEach(RunBerlinScenarioMultimodal::fixVehicles);
 		analyzeNetworkLinkTypes(scenario.getNetwork());
 		allowBikeWalkOnNetwork(scenario.getNetwork());
 		PrepareMultiModalScenario.run(scenario);
 		Controler controler = prepareControler(scenario);
-		//controler.addOverridingModule(new MultiModalModule());
+		controler.addOverridingModule(new MultiModalModule());
 
 		config.travelTimeCalculator().setFilterModes(true);
 
@@ -109,10 +112,23 @@ public final class RunBerlinScenarioMultimodal {
 		controler.run();
 	}
 
+	public static void fixVehicles(Person person) {
+		Map<String, Id<Vehicle>> vehicleIds = new HashMap<>();
+		vehicleIds.put("walk", Id.createVehicleId(person.getId().toString() + "-walk"));
+		//vehicleIds.put("car", Id.createVehicleId(person.getId().toString() + "-car")); // should already have a car, if intended
+		vehicleIds.put("bike", Id.createVehicleId(person.getId().toString() + "-bike"));
+		//vehicleIds.put("bicycle", Id.createVehicleId(person.getId().toString() + "-bicycle"));
+		person.getAttributes().putAttribute("vehicles", vehicleIds);
+	}
+
 	public static void allowBikeWalkOnNetwork(Network network) {
 		for (Link link : network.getLinks().values()) {
-			if (link.getAllowedModes().size() == 1 && link.getAllowedModes().contains(TransportMode.pt))
+			if (link.getAllowedModes().size() == 1 && link.getAllowedModes().contains(TransportMode.pt)) {
+				// walk -> pt links are making trouble if only pt is allowed -> add walk here for convenience
+				// (actually walking there ignoring pt, should not be preferred by the agents anyway)
+				//link.setAllowedModes(Set.of(TransportMode.pt, TransportMode.walk));
 				continue;
+			}
 			String type = (String) link.getAttributes().getAttribute("type");
 //			if (type != null) {
 //				switch (type) {
@@ -129,12 +145,8 @@ public final class RunBerlinScenarioMultimodal {
 	public static void addBikeWalkToLink(Link link) {
 		Set<String> allowedModes = link.getAllowedModes();
 		Set<String> allowedModesMut = new HashSet<>(allowedModes);
-		if (!allowedModes.contains(TransportMode.bike)) {
-			allowedModesMut.add(TransportMode.bike);
-		}
-		if (!allowedModes.contains(TransportMode.walk)) {
-			allowedModesMut.add(TransportMode.walk);
-		}
+		allowedModesMut.add(TransportMode.bike);
+		allowedModesMut.add(TransportMode.walk);
 		link.setAllowedModes(allowedModesMut);
 	}
 
@@ -250,7 +262,7 @@ public final class RunBerlinScenarioMultimodal {
 		config.plansCalcRoute().setRoutingRandomness(3.);
 		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.ride);
 		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.pt);
-		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.bike);
+		//config.plansCalcRoute().removeTeleportedModeParams(TransportMode.bike);
 		//config.plansCalcRoute().removeTeleportedModeParams(TransportMode.walk); // ? Fishy, TODO
 		config.plansCalcRoute().removeTeleportedModeParams("undefined");
 

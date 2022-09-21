@@ -25,4 +25,20 @@
 		<doorOperation mode="serial"/>
 		<passengerCarEquivalents pce="3.5"/>
 	</vehicleType>
+	<vehicleType id="bike">
+		<length meter="2.5"/>
+		<width meter="0.5"/>
+		<accessTime secondsPerPerson="1.0"/>
+		<egressTime secondsPerPerson="1.0"/>
+		<doorOperation mode="serial"/>
+		<passengerCarEquivalents pce="0.25"/>
+	</vehicleType>
+	<vehicleType id="walk">
+		<length meter="0.5"/>
+		<width meter="0.5"/>
+		<accessTime secondsPerPerson="1.0"/>
+		<egressTime secondsPerPerson="1.0"/>
+		<doorOperation mode="serial"/>
+		<passengerCarEquivalents pce="0.25"/>
+	</vehicleType>
 </vehicleDefinitions>

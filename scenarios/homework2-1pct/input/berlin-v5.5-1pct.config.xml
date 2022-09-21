@@ -36,14 +36,19 @@
 	<module name="multimodal" >
 		<param name="createMultiModalNetwork" value="true" />
 		<param name="cuttoffValueForNonCarModes" value="25.0" />
-		<param name="dropNonCarRoutes" value="true" />
+		<param name="dropNonCarRoutes" value="false" />
 		<param name="multiModalSimulationEnabled" value="true" />
-		<param name="simulatedModes" value="bike,walk,car,pt,freight" />
+		<param name="simulatedModes" value="bike,walk" />
 		<param name="ensureActivityReachability" value ="true" />
 	</module>
 
 	<module name="planscalcroute">
-		<param name="networkModes" value="car,freight,ride,bike" />
+		<param name="networkModes" value="car,freight,ride" />
+		<parameterset type="teleportedModeParameters" >
+			<param name="beelineDistanceFactor" value="1.3" />
+			<param name="mode" value="bike" />
+			<param name="teleportedModeSpeed" value="3.1388889" />
+		</parameterset>
 		<parameterset type="teleportedModeParameters">
 			<param name="beelineDistanceFactor" value="1.3" />
 			<param name="mode" value="walk" />
@@ -56,11 +61,11 @@
 		<param name="endTime" value="36:00:00" />
 		<param name="flowCapacityFactor" value="0.015" />
 		<param name="storageCapacityFactor" value="0.015" />
-		<!--<param name="mainMode" value="car,freight" />-->
+		<param name="mainMode" value="car,freight" />
 		<param name="numberOfThreads" value="8" />
 		<param name="stuckTime" value="30.0" />
 		<param name="trafficDynamics" value="kinematicWaves" />
-		<!--<param name="vehiclesSource" value="modeVehicleTypesFromVehiclesData" />-->
+		<param name="vehiclesSource" value="modeVehicleTypesFromVehiclesData" />
 		<param name="insertingWaitingVehiclesBeforeDrivingVehicles" value="true" />
 	</module>
 	<module name="strategy">
