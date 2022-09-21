@@ -38,7 +38,7 @@ import com.google.inject.Inject;
  * 
  * @author nagel / gleich
  *
- */
+ */	
 public final class OpenBerlinIntermodalPtDrtRouterModeIdentifier implements AnalysisMainModeIdentifier {
 	private final List<String> modeHierarchy = new ArrayList<>() ;
 	private final List<String> drtModes;
@@ -48,7 +48,7 @@ public final class OpenBerlinIntermodalPtDrtRouterModeIdentifier implements Anal
 		drtModes = Arrays.asList(TransportMode.drt, "drt2", "drt_teleportation");
 		
 		modeHierarchy.add( TransportMode.walk ) ;
-		modeHierarchy.add( "bicycle" ); // TransportMode.bike is not registered as main mode, only "bicycle" ;
+		modeHierarchy.add( "bike" ); // TransportMode.bike is not registered as main mode, only "bicycle" ;
 		modeHierarchy.add( TransportMode.ride ) ;
 		modeHierarchy.add( TransportMode.car ) ;
 		for (String drtMode: drtModes) {
