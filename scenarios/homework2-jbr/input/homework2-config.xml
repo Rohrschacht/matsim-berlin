@@ -5,7 +5,7 @@
 		<param name="mutationRange" value="7200.0" />
 	</module>
 	<module name="controler" >
-		<param name="lastIteration" value="500" />
+		<param name="lastIteration" value="3" />
 		<param name="overwriteFiles" value="overwriteExistingFiles" />
 		<param name="runId" value="berlin-v5.5-1pct" />
 		<param name="outputDirectory" value="./scenarios/berlin-v5.5-1pct/output-berlin-v5.5-1pct" />
@@ -22,7 +22,7 @@
 		<param name="inputNetworkFile" value="berlin-v5.5-network.xml" />
 	</module>
 	<module name="plans">
-		<param name="inputPlansFile" value="berlin-v5.5-1pct.plans.xml" />
+		<param name="inputPlansFile" value="cleaned-berlin-v5.5-1pct.plans.xml" />
 		<param name="removingUnnecessaryPlanAttributes" value="true" />
 	</module>
 	<module name="vehicles">
@@ -39,17 +39,22 @@
 		<param name="cuttoffValueForNonCarModes" value="25.0" />
 		<param name="dropNonCarRoutes" value="true" />
 		<param name="multiModalSimulationEnabled" value="true" />
-		<param name="simulatedModes" value="bike,walk,car,pt,freight" />
+		<param name="simulatedModes" value="bike,walk" />
 		<param name="ensureActivityReachability" value ="true" />
 	</module>
 
 	<module name="planscalcroute" >
-		<param name="networkModes" value="car,freight,ride,bike" />
-<!--		<parameterset type="teleportedModeParameters" >
+		<param name="networkModes" value="car,freight,ride" />
+		<parameterset type="teleportedModeParameters" >
 			<param name="beelineDistanceFactor" value="1.3" />
 			<param name="mode" value="walk" />
 			<param name="teleportedModeSpeed" value="1.0555556" />
-		</parameterset>-->
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="beelineDistanceFactor" value="1.3" />
+			<param name="mode" value="bike" />
+			<param name="teleportedModeSpeed" value="3.1388889" />
+		</parameterset>
 	</module>
 
 	<module name="qsim" >
@@ -57,11 +62,11 @@
 		<param name="endTime" value="36:00:00" />
 		<param name="flowCapacityFactor" value="0.015" />
 		<param name="storageCapacityFactor" value="0.015" />
-		<!--<param name="mainMode" value="car,freight" />-->
+		<param name="mainMode" value="car,freight" />
 		<param name="numberOfThreads" value="8" />
 		<param name="stuckTime" value="30.0" />
 		<param name="trafficDynamics" value="kinematicWaves" />
-		<!--<param name="vehiclesSource" value="modeVehicleTypesFromVehiclesData" />-->
+		<param name="vehiclesSource" value="modeVehicleTypesFromVehiclesData" />
 		<param name="insertingWaitingVehiclesBeforeDrivingVehicles" value="true" />
 	</module>
 

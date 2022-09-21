@@ -82,12 +82,12 @@ public final class RunBerlinScenarioMultimodal {
 			args = new String[]{"scenarios/homework2-jbr/input/homework2-config.xml"};
 		}
 
-		MultiModalConfigGroup multiModalConfigGroup = new MultiModalConfigGroup();
-//		multiModalConfigGroup.setSimulatedModes("bike,bicycle,walk");
+/*		MultiModalConfigGroup multiModalConfigGroup = new MultiModalConfigGroup();
+		multiModalConfigGroup.setSimulatedModes("bike,bicycle,walk");
 		multiModalConfigGroup.setCreateMultiModalNetwork(true);
-		multiModalConfigGroup.setMultiModalSimulationEnabled(true);
+		multiModalConfigGroup.setMultiModalSimulationEnabled(true);*/
 
-		Config config = prepareConfig(args, multiModalConfigGroup);
+		Config config = prepareConfig(args);
 //		{
 //			PlansCalcRouteConfigGroup.TeleportedModeParams params = new PlansCalcRouteConfigGroup.TeleportedModeParams("bike");
 //			params.setTeleportedModeSpeed(3.1388889);
@@ -95,15 +95,13 @@ public final class RunBerlinScenarioMultimodal {
 //			config.plansCalcRoute().addTeleportedModeParams(params);
 //		}
 		Scenario scenario = prepareScenario(config);
+		scenario.getPopulation().getPersons().values().forEach(RunBerlinScenarioMultimodal::fixVehicles);
 		PrepareMultiModalScenario.run(scenario);
 		Controler controler = prepareControler(scenario);
-		//controler.addOverridingModule(new MultiModalModule());
+		controler.addOverridingModule(new MultiModalModule());
 
 		config.travelTimeCalculator().setFilterModes(true);
 
-		//scenario.getPopulation().getPersons().values().forEach(RunBerlinScenarioMultimodal::fixVehicles);
-
-		config.controler().setLastIteration(2);
 
 //		NetworkUtils.writeNetwork(scenario.getNetwork(), "multimodal-network");
 
@@ -115,7 +113,7 @@ public final class RunBerlinScenarioMultimodal {
 		vehicleIds.put("walk", Id.createVehicleId(person.getId().toString() + "-walk"));
 		vehicleIds.put("car", Id.createVehicleId(person.getId().toString() + "-car"));
 		vehicleIds.put("bike", Id.createVehicleId(person.getId().toString() + "-bike"));
-		vehicleIds.put("bicycle", Id.createVehicleId(person.getId().toString() + "-bicycle"));
+		//vehicleIds.put("bicycle", Id.createVehicleId(person.getId().toString() + "-bicycle"));
 		person.getAttributes().putAttribute("vehicles", vehicleIds);
 	}
 
@@ -223,7 +221,7 @@ public final class RunBerlinScenarioMultimodal {
 		config.plansCalcRoute().setRoutingRandomness(3.);
 		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.ride);
 		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.pt);
-		config.plansCalcRoute().removeTeleportedModeParams(TransportMode.bike);
+		//config.plansCalcRoute().removeTeleportedModeParams(TransportMode.bike);
 		//config.plansCalcRoute().removeTeleportedModeParams(TransportMode.walk); // ? Fishy, TODO
 		config.plansCalcRoute().removeTeleportedModeParams("undefined");
 
