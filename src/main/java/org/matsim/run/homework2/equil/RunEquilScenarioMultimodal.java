@@ -1,10 +1,9 @@
 package org.matsim.run.homework2.equil;
 
+import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.TransportMode;
 import org.matsim.contrib.multimodal.MultiModalModule;
-import org.matsim.contrib.multimodal.config.MultiModalConfigGroup;
 import org.matsim.contrib.multimodal.tools.PrepareMultiModalScenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
@@ -25,12 +24,18 @@ public class RunEquilScenarioMultimodal {
 		}
 
 		Config config = prepareConfig(args);
+		// mutate legs in subtours
 		config.subtourModeChoice().setChainBasedModes(new String[]{});
 		config.subtourModeChoice().setProbaForRandomSingleTripMode(0.5);
+
 		Scenario scenario = ScenarioUtils.loadScenario(config);
 		PrepareMultiModalScenario.run(scenario);
+
 		Controler controler = new Controler(scenario);
 		controler.addOverridingModule(new MultiModalModule());
+		if (config.transit().isUseTransit()) {
+			controler.addOverridingModule(new SwissRailRaptorModule());
+		}
 
 		controler.run();
 	}
