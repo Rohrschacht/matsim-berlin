@@ -48,6 +48,7 @@ import org.matsim.core.gbl.Gbl;
 import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.population.routes.RouteFactories;
 import org.matsim.core.router.AnalysisMainModeIdentifier;
+import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.scoring.functions.ScoringParametersForPerson;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
@@ -101,13 +102,11 @@ public final class RunBerlinScenarioMultimodal {
 			log.info("pt disabled - removing agents planned to use pt");
 			Collection<Id<Person>> toRemove = new ArrayList<>();
 			for (Person person : scenario.getPopulation().getPersons().values()) {
-				person.getPlans().stream().flatMap(plan -> plan.getPlanElements().stream()).forEach(
-					planElement -> {
-						if (planElement instanceof Leg && TransportMode.pt.equals(((Leg) planElement).getMode())) {
-							toRemove.add(person.getId());
-						}
-					}
-				);
+				person.getPlans().stream()
+					.flatMap(plan -> TripStructureUtils.getTrips(plan).stream())
+					.map(trip -> TripStructureUtils.identifyMainMode(trip.getTripElements()))
+					.filter(TransportMode.pt::equals)
+					.forEach(pt -> toRemove.add(person.getId()));
 			}
 			toRemove.forEach(id -> scenario.getPopulation().removePerson(id));
 		}
