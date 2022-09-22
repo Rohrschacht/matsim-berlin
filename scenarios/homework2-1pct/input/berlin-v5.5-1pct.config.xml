@@ -21,7 +21,7 @@
 		<param name="inputNetworkFile" value="berlin-v5.5-network.xml.gz" />
 	</module>
 	<module name="plans">
-		<param name="inputPlansFile" value="berlin-v5.5-1pct.plans.xml.gz" />
+		<param name="inputPlansFile" value="cleaned-berlin-v5.5-1pct.plans.xml.gz" />
 		<param name="removingUnnecessaryPlanAttributes" value="true" />
 	</module>
 	<module name="vehicles">
@@ -29,7 +29,7 @@
 	</module>
 	<module name="transit">
 		<param name="transitScheduleFile" value="berlin-v5.5-transit-schedule.xml.gz" />
-		<param name="useTransit" value="true" />
+		<param name="useTransit" value="false" />
 		<param name="vehiclesFile" value="berlin-v5.5-transit-vehicles.xml.gz" />
 	</module>
 
@@ -102,8 +102,8 @@
 		</parameterset>
 	</module>
 	<module name="subtourModeChoice">
-		<param name="chainBasedModes" value="car,bike" />
-		<param name="modes" value="car,pt,bike,walk" />
+		<param name="chainBasedModes" value="car" />
+		<param name="modes" value="car,bike,walk" />
 	</module>
 	<module name="transitRouter">
 		<param name="extensionRadius" value="500.0" />

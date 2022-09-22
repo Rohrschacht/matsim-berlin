@@ -28,6 +28,7 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.drt.routing.DrtRoute;
 import org.matsim.contrib.drt.routing.DrtRouteFactory;
@@ -95,6 +96,22 @@ public final class RunBerlinScenarioMultimodal {
 //		}
 		Scenario scenario = prepareScenario(config);
 		scenario.getPopulation().getPersons().values().forEach(RunBerlinScenarioMultimodal::fixVehicles);
+
+		if (!config.transit().isUseTransit()) {
+			log.info("pt disabled - removing agents planned to use pt");
+			Collection<Id<Person>> toRemove = new ArrayList<>();
+			for (Person person : scenario.getPopulation().getPersons().values()) {
+				person.getPlans().stream().flatMap(plan -> plan.getPlanElements().stream()).forEach(
+					planElement -> {
+						if (planElement instanceof Leg && TransportMode.pt.equals(((Leg) planElement).getMode())) {
+							toRemove.add(person.getId());
+						}
+					}
+				);
+			}
+			toRemove.forEach(id -> scenario.getPopulation().removePerson(id));
+		}
+
 		analyzeNetworkLinkTypes(scenario.getNetwork());
 		allowBikeWalkOnNetwork(scenario.getNetwork());
 		PrepareMultiModalScenario.run(scenario);
