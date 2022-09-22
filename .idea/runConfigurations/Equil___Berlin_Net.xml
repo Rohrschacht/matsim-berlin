@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Equil - Berlin Net" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.matsim.run.homework2.equil.RunEquilScenarioMultimodal" />
+    <module name="matsim-berlin" />
+    <option name="PROGRAM_PARAMETERS" value="scenarios/equil/config_multimodal-network-berlin.xml" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.matsim.run.homework2.equil.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
