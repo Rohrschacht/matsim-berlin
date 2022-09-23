@@ -29,6 +29,7 @@ import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.drt.routing.DrtRoute;
 import org.matsim.contrib.drt.routing.DrtRouteFactory;
 import org.matsim.contribs.discrete_mode_choice.modules.DiscreteModeChoiceModule;
@@ -82,6 +83,7 @@ public final class RunBerlinScenarioDiscreteModeChoice {
 
 		Config config = prepareConfig(args, new DiscreteModeChoiceConfigGroup());
 		Scenario scenario = prepareScenario(config);
+		cleanPlans(scenario.getPopulation());
 
 		if (!config.transit().isUseTransit()) {
 			log.info("pt disabled - removing agents planned to use pt");
@@ -108,6 +110,23 @@ public final class RunBerlinScenarioDiscreteModeChoice {
 		config.controler().setLastIteration(2);
 
 		controler.run();
+	}
+
+	/**
+	 * The Discrete Mode Choice module cannot handle plans without any actual trips, but there seem to
+	 * exist some persons in matsim-berlin, that are only at home and never move. -> remove them.
+	 * @param population a {@link Scenario#getPopulation()}
+	 */
+	private static void cleanPlans(Population population) {
+		Collection<Id<Person>> toRemove = new ArrayList<>();
+		for (Person person : population.getPersons().values()) {
+			person.getPlans().stream()
+				.map(TripStructureUtils::getTrips)
+				.filter(List::isEmpty)
+				.forEach(p -> toRemove.add(person.getId()));
+		}
+		log.info("Removing " + toRemove.size() + " Persons without Legs in their plans");
+		toRemove.forEach(population::removePerson);
 	}
 
 
