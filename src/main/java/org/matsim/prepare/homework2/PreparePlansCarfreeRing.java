@@ -51,9 +51,13 @@ public class PreparePlansCarfreeRing {
 				final List<PlanElement> planElements = plan.getPlanElements();
 				var trips = TripStructureUtils.getTrips(plan);
 
-				Predicate<Leg> isLegInGeometry = (leg) ->
-					coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(), umweltzone)
+				Predicate<Leg> isLegInGeometry = (leg) -> {
+					if (leg.getRoute() == null) {
+						return false;
+					}
+					return coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(), umweltzone)
 						|| coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
+				};
 
 				for (TripStructureUtils.Trip trip : trips) {
 					// has to be done trip-wise since the routing mode has to be consistent per trip
@@ -69,8 +73,9 @@ public class PreparePlansCarfreeRing {
 					if (mode.equals(TransportMode.car)) {
 						System.out.println(person.getId().toString());
 						fullTrip.clear();
-						fullTrip.add(PopulationUtils.createLeg("bicycle"));
+						fullTrip.add(PopulationUtils.createLeg("pt"));
 						if (fullTrip.size() != 1) throw new RuntimeException(fullTrip.toString());
+						// todo remove departTime from home/start activity?
 					}
 				}
 			}
