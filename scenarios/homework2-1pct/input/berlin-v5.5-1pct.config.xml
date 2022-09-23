@@ -39,8 +39,9 @@
 		<param name="tourConstraints" value="VehicleContinuity,SubtourMode" />
 		<param name="tourFinder" value="PlanBased" />
 		<param name="tourEstimator" value="Uniform" />
+		<param name="modeAvailability" value="Default" />
 
-		<parameterset type="modeAvailability:Car">
+		<parameterset type="modeAvailability:Default">
 			<param name="availableModes" value="car, walk, pt, bicycle" />
 		</parameterset>
 	</module>
