@@ -62,6 +62,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorithmType.FastAStarLandmarks;
+import static org.matsim.prepare.homework2.PreparePlansCarfreeRing.makePlansInRingCarfree;
 
 /**
  * @author ikaddoura
@@ -84,6 +85,9 @@ public final class RunBerlinScenarioDiscreteModeChoice {
 		Config config = prepareConfig(args, new DiscreteModeChoiceConfigGroup());
 		Scenario scenario = prepareScenario(config);
 		cleanPlans(scenario.getPopulation());
+
+		// todo if carfree
+		makePlansInRingCarfree(scenario.getPopulation(), scenario.getNetwork());
 
 		if (!config.transit().isUseTransit()) {
 			log.info("pt disabled - removing agents planned to use pt");
