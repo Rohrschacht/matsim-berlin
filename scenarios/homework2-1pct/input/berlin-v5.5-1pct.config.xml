@@ -21,6 +21,7 @@
 		<param name="inputNetworkFile" value="berlin-v5.5-network.xml.gz" />
 	</module>
 	<module name="plans">
+<!--		<param name="inputPlansFile" value="berlin-v5.5-1pct.carfree_ring_plan.xml.gz" />-->
 		<param name="inputPlansFile" value="berlin-v5.5-1pct.plans.xml.gz" />
 		<param name="removingUnnecessaryPlanAttributes" value="true" />
 	</module>
@@ -34,15 +35,31 @@
 	</module>
 
 	<module name="DiscreteModeChoice">
-		<param name="modelType" value="Tour" />
+		<param name="modelType" value="Trip" />
 		<param name="selector" value="Random" />
-		<param name="tourConstraints" value="VehicleContinuity,SubtourMode" />
-		<param name="tourFinder" value="PlanBased" />
-		<param name="tourEstimator" value="Uniform" />
+		<param name="tripConstraints" value="ShapeFile" /><!-- TransitWalk , LinkAttribute?-->
+		<param name="tripEstimator" value="Uniform" />
+		<!--		<param name="tourConstraints" value="VehicleContinuity,SubtourMode,FromTripBased" />-->
+		<!--		<param name="tourFinder" value="PlanBased" /> Only when modelType Tour -->
+		<!--		<param name="tourEstimator" value="Uniform" />-->
 		<param name="modeAvailability" value="Default" />
 
 		<parameterset type="modeAvailability:Default">
 			<param name="availableModes" value="car, walk, pt, bicycle" />
+		</parameterset>
+
+		<parameterset type="tripConstraint:ShapeFile" >
+			<!-- Modes for which the shapes will be considered. -->
+			<param name="constrainedModes" value="car" />
+			<!-- Path to a shape file, which should have the same projection as the network. -->
+			<param name="path" value="../../../shapes/Umweltzone.shp" />
+			<!-- Defines the criterion on when a trip with the constrained mode will be allowed: ORIGIN, DESTINATION, BOTH, ANY, NONE -->
+			<param name="requirement" value="NONE" />
+		</parameterset>
+
+		<parameterset type="tourConstraint:SubtourMode" >
+			<!-- Modes for which the sub-tour behaviour should be replicated. If all available modes are put here, this equals to SubTourModeChoice with singleLegProbability == 0.0; if only the constrained modes are put here, it equals singleLegProbability > 0.0 -->
+			<param name="constrainedModes" value="car" />
 		</parameterset>
 	</module>
 

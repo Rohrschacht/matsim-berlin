@@ -114,7 +114,7 @@ public final class RunBerlinScenarioDiscreteModeChoice {
 
 	/**
 	 * The Discrete Mode Choice module cannot handle plans without any actual trips, but there seem to
-	 * exist some persons in matsim-berlin, that are only at home and never move. -> remove them.
+	 * exist some persons in matsim-berlin, that are only at home and never move. -> remove them. ~2300
 	 * @param population a {@link Scenario#getPopulation()}
 	 */
 	private static void cleanPlans(Population population) {
