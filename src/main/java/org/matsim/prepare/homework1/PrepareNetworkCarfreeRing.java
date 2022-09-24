@@ -41,6 +41,9 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(119212)
 		// A100 Schmargendorf
 		,Id.createLinkId(60892)
+		,Id.createLinkId(40246)
+		,Id.createLinkId(41727)
+		,Id.createLinkId(77691)
 		// Detmolder Straße
 		,Id.createLinkId(82600)
 		,Id.createLinkId(28652)
@@ -80,8 +83,11 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(108714)
 		,Id.createLinkId(120107)
 		,Id.createLinkId(120119)
+		,Id.createLinkId(136723)
 		// Tempelhof
 		,Id.createLinkId(90841)
+		,Id.createLinkId(109644)
+		,Id.createLinkId(109646)
 		,Id.createLinkId(109659)
 		// Frankfurter Allee
 		,Id.createLinkId(127552)
@@ -91,8 +97,11 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(147631)
 		// Kniprodestraße
 		,Id.createLinkId(142802)
+		,Id.createLinkId(83447)
+		,Id.createLinkId(3246)
 		// Greifswalder Str
 		,Id.createLinkId(62189)
+		,Id.createLinkId(147027)
 		// Schönhauser Allee todo Gegenrichtung fehlt?
 		,Id.createLinkId(102315)
 		,Id.createLinkId(102316)
@@ -106,6 +115,8 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(69947)
 		// Hohenzollerndamm
 		,Id.createLinkId(141914)
+		,Id.createLinkId(149408)
+		,Id.createLinkId(147670)
 		,Id.createLinkId(113525)
 		,Id.createLinkId(113473)
 		,Id.createLinkId(149413)
@@ -125,6 +136,22 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(19110)
 		,Id.createLinkId(98313)
 		,Id.createLinkId(138531)
+		// Bundesplazu Tunnel
+		,Id.createLinkId(152708)
+		,Id.createLinkId(71225)
+		,Id.createLinkId(71226)
+		,Id.createLinkId(71232)
+		,Id.createLinkId(71233)
+		,Id.createLinkId(71280)
+		,Id.createLinkId(71282)
+		,Id.createLinkId(98343)
+		,Id.createLinkId(62495)
+		,Id.createLinkId(152713)
+		,Id.createLinkId(71239)
+		,Id.createLinkId(71240)
+		,Id.createLinkId(71242)
+		,Id.createLinkId(98340)
+		,Id.createLinkId(62509)
 		// Bundesplatz - Wexstraße
 		,Id.createLinkId(138800)
 		,Id.createLinkId(138801)
@@ -139,6 +166,17 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(89044)
 		,Id.createLinkId(98302)
 		,Id.createLinkId(98308)
+		// Beusselstraße
+		,Id.createLinkId(63453)
+		// Kärntener Straße (Enklave)
+		,Id.createLinkId(87443)
+		,Id.createLinkId(87444)
+		,Id.createLinkId(87449)
+		,Id.createLinkId(87450)
+		// Sachsendamm
+		,Id.createLinkId(91062)
+		,Id.createLinkId(91037)
+		,Id.createLinkId(114751)
 
 	);
 
