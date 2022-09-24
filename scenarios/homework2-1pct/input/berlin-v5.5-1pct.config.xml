@@ -52,7 +52,7 @@
 			<!-- Modes for which the shapes will be considered. -->
 			<param name="constrainedModes" value="car" />
 			<!-- Path to a shape file, which should have the same projection as the network. -->
-			<param name="path" value="../../../shapes/Umweltzone.shp" />
+			<param name="path" value="../../../shapes/Umweltzone_test.shp" />
 			<!-- Defines the criterion on when a trip with the constrained mode will be allowed: ORIGIN, DESTINATION, BOTH, ANY, NONE -->
 			<param name="requirement" value="NONE" />
 		</parameterset>

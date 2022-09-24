@@ -82,7 +82,7 @@ public class CoordinateGeometryUtils {
 	}
 
 	public static Geometry getUmweltzone() {
-		var shapeFileName = "shapes/Umweltzone.shp";
+		var shapeFileName = "shapes/Umweltzone_test.shp";
 		return (Geometry) ShapeFileReader.getAllFeatures(shapeFileName).stream().findFirst().get().getDefaultGeometry();
 	}
 }
