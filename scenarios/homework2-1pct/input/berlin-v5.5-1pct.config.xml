@@ -37,7 +37,7 @@
 	<module name="DiscreteModeChoice">
 		<param name="modelType" value="Trip" />
 		<param name="selector" value="Random" />
-		<param name="tripConstraints" value="ShapeFile" /><!-- TransitWalk , LinkAttribute?-->
+		<param name="tripConstraints" value="ShapeFile,LinkAttribute" /><!-- TransitWalk -->
 		<param name="tripEstimator" value="Uniform" />
 		<!--		<param name="tourConstraints" value="VehicleContinuity,SubtourMode,FromTripBased" />-->
 		<!--		<param name="tourFinder" value="PlanBased" /> Only when modelType Tour -->
@@ -53,6 +53,17 @@
 			<param name="constrainedModes" value="car" />
 			<!-- Path to a shape file, which should have the same projection as the network. -->
 			<param name="path" value="../../../shapes/Umweltzone.shp" />
+			<!-- Defines the criterion on when a trip with the constrained mode will be allowed: ORIGIN, DESTINATION, BOTH, ANY, NONE -->
+			<param name="requirement" value="NONE" />
+		</parameterset>
+
+		<parameterset type="tripConstraint:LinkAttribute" >
+			<!-- Link attribute that will be considered for feasibility of the trip. -->
+			<param name="attributeName" value="umweltzone" />
+			<!-- Value that the link attributes should equal. -->
+			<param name="attributeValue" value="no_car" />
+			<!-- Modes for which the shapes will be considered. -->
+			<param name="constrainedModes" value="car" />
 			<!-- Defines the criterion on when a trip with the constrained mode will be allowed: ORIGIN, DESTINATION, BOTH, ANY, NONE -->
 			<param name="requirement" value="NONE" />
 		</parameterset>
