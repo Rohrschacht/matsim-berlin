@@ -48,10 +48,16 @@ public class CoordinateGeometryUtils {
 	}
 
 	public boolean isLinkInGeometry(Link link, Geometry geometry) {
-		return isCoordInGeometry(link.getCoord(), geometry);
+		return isCoordInGeometry(link.getCoord(), geometry)
+			|| isCoordInGeometry(link.getFromNode().getCoord(), geometry)
+			|| isCoordInGeometry(link.getToNode().getCoord(), geometry)
+		;
 	}
 
 	public boolean isLegInGeometry(Leg leg, Geometry geometry) {
+		if (leg.getRoute() == null) {
+			return false;
+		}
 		return isLinkInGeometry(links.get(leg.getRoute().getStartLinkId()), geometry)
 			|| isLinkInGeometry(links.get(leg.getRoute().getEndLinkId()), geometry);
 	}
