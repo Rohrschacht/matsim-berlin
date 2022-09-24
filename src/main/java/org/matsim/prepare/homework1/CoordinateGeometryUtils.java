@@ -1,6 +1,9 @@
 package org.matsim.prepare.homework1;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -51,6 +54,13 @@ public class CoordinateGeometryUtils {
 	public boolean isLegInGeometry(Leg leg, Geometry geometry) {
 		return isLinkInGeometry(links.get(leg.getRoute().getStartLinkId()), geometry)
 			|| isLinkInGeometry(links.get(leg.getRoute().getEndLinkId()), geometry);
+	}
+
+	public boolean isBeelineInGeometry(Coord point1, Coord point2, Geometry geometry) {
+		var p1 = MGC.coord2Point(transformation.transform(point1));
+		var p2  = MGC.coord2Point(transformation.transform(point2));
+		LineString line = new LineString(new CoordinateArraySequence(new Coordinate[]{p1.getCoordinate(), p2.getCoordinate()}), geometry.getFactory());
+		return geometry.intersects(line);
 	}
 
 	public long countTripsFromTo(Collection<TripStructureUtils.Trip> trips, Geometry from, Geometry to) {

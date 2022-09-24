@@ -1,8 +1,10 @@
 package org.matsim.prepare.homework2;
 
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.Config;
@@ -51,17 +53,25 @@ public class PreparePlansCarfreeRing {
 				final List<PlanElement> planElements = plan.getPlanElements();
 				var trips = TripStructureUtils.getTrips(plan);
 
-				Predicate<Leg> isLegInGeometry = (leg) -> {
+			/*	Predicate<Leg> isLegInGeometry = (leg) -> {
 					if (leg.getRoute() == null) {
 						return false;
 					}
 					return coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(), umweltzone)
 						|| coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
+				};*/
+
+				Predicate<Leg> isRouteInGeometry = (leg) -> {
+					if (leg.getRoute() == null) {
+						return false;
+					}
+					return coordinateUtils.isBeelineInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(),
+						links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
 				};
 
 				for (TripStructureUtils.Trip trip : trips) {
 					// has to be done trip-wise since the routing mode has to be consistent per trip
-					boolean adjustmentNeeded = trip.getLegsOnly().stream().anyMatch(isLegInGeometry);
+					boolean adjustmentNeeded = trip.getLegsOnly().stream().anyMatch(isRouteInGeometry);
 					if (!adjustmentNeeded)
 						continue;
 
