@@ -22,22 +22,54 @@ public class PrepareNetworkCarfreeRing {
 	 */
 	private static Set<Id<Link>> excludedLinks = Set.of(
 		// Spandauer Damm - Westend
-			Id.createLinkId(38708)
-			,Id.createLinkId(38757)
-			,Id.createLinkId(128599)
-			,Id.createLinkId(125768)
-			,Id.createLinkId(118582)
-			,Id.createLinkId(47451)
-			,Id.createLinkId(68015)
+		Id.createLinkId(38708)
+		,Id.createLinkId(38757)
+		,Id.createLinkId(128599)
+		,Id.createLinkId(125768)
+		,Id.createLinkId(118582)
+		,Id.createLinkId(47451)
+		,Id.createLinkId(68015)
 		// Sonnenallee
-			,Id.createLinkId(129504)
-			,Id.createLinkId(71660)
-			,Id.createLinkId(5305)
-			,Id.createLinkId(11760)
-			,Id.createLinkId(12586)
-			,Id.createLinkId(129499)
-		// Ringbahn - Neues Ufer Str.
-			,Id.createLinkId(119213)
+		,Id.createLinkId(129504)
+		,Id.createLinkId(71660)
+		,Id.createLinkId(5305)
+		,Id.createLinkId(11760)
+		,Id.createLinkId(12586)
+		,Id.createLinkId(129499)
+		// Ringbahn - Neues Ufer
+		,Id.createLinkId(119213)
+		,Id.createLinkId(119212)
+		// A100 Schmargendorf
+		,Id.createLinkId(60892)
+		// Detmolder Straße
+		,Id.createLinkId(82600)
+		,Id.createLinkId(28652)
+		,Id.createLinkId(137869)
+		,Id.createLinkId(79235)
+		// A100 - Abfahrt Detmolder Str.
+		,Id.createLinkId(120962)
+		,Id.createLinkId(130696)
+		,Id.createLinkId(86275)
+		// A100 - Auffahrt Detmolder Str.
+		,Id.createLinkId(86274)
+		,Id.createLinkId(138535)
+		,Id.createLinkId(40245)
+		// Friedrich-Krause-Ufer
+		,Id.createLinkId(137696)
+		,Id.createLinkId(137697)
+		,Id.createLinkId(137698)
+		,Id.createLinkId(137699)
+		,Id.createLinkId(111843)
+		,Id.createLinkId(111844)
+		// An der Putlitzbrücke - Westhafen
+		,Id.createLinkId(92030)
+		,Id.createLinkId(111993)
+		,Id.createLinkId(65598)
+		,Id.createLinkId(65599)
+		,Id.createLinkId(118917)
+		,Id.createLinkId(111962)
+		,Id.createLinkId(92031)
+		,Id.createLinkId(91746)
 		);
 
 	public static void main(String[] args) {
