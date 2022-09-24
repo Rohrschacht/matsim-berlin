@@ -69,9 +69,19 @@ public class PreparePlansCarfreeRing {
 						links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
 				};
 
+				Predicate<Leg> carNotAllowed = (leg) -> {
+					if (leg == null) {
+						return false;
+					}
+					return (TransportMode.car.equals(leg.getMode())
+					&& !links.get(leg.getRoute().getStartLinkId()).getAllowedModes().contains(TransportMode.car)
+					&& !links.get(leg.getRoute().getEndLinkId()).getAllowedModes().contains(TransportMode.car)
+					);
+				};
+
 				for (TripStructureUtils.Trip trip : trips) {
 					// has to be done trip-wise since the routing mode has to be consistent per trip
-					boolean adjustmentNeeded = trip.getLegsOnly().stream().anyMatch(isRouteInGeometry);
+					boolean adjustmentNeeded = trip.getLegsOnly().stream().anyMatch(isRouteInGeometry.or(carNotAllowed));
 					if (!adjustmentNeeded)
 						continue;
 
