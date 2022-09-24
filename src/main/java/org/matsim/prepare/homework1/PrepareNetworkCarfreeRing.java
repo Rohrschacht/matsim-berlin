@@ -70,7 +70,77 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(111962)
 		,Id.createLinkId(92031)
 		,Id.createLinkId(91746)
-		);
+		// A100 - Schmargendorf
+		,Id.createLinkId(120900)
+		,Id.createLinkId(40233)
+		,Id.createLinkId(40232)
+		,Id.createLinkId(47307)
+		,Id.createLinkId(40243)
+		// Hermannstraße
+		,Id.createLinkId(108714)
+		,Id.createLinkId(120107)
+		,Id.createLinkId(120119)
+		// Tempelhof
+		,Id.createLinkId(90841)
+		,Id.createLinkId(109659)
+		// Frankfurter Allee
+		,Id.createLinkId(127552)
+		,Id.createLinkId(3501)
+		// Landsberger Allee
+		,Id.createLinkId(147644)
+		,Id.createLinkId(147631)
+		// Kniprodestraße
+		,Id.createLinkId(142802)
+		// Greifswalder Str
+		,Id.createLinkId(62189)
+		// Schönhauser Allee todo Gegenrichtung fehlt?
+		,Id.createLinkId(102315)
+		,Id.createLinkId(102316)
+		// Ostpreußenbrücke - Neue Kantstraße
+		,Id.createLinkId(151256)
+		,Id.createLinkId(149708)
+		,Id.createLinkId(151264)
+		,Id.createLinkId(149700)
+		// Kurfürstendamm
+		,Id.createLinkId(149582)
+		,Id.createLinkId(69947)
+		// Hohenzollerndamm
+		,Id.createLinkId(141914)
+		,Id.createLinkId(113525)
+		,Id.createLinkId(113473)
+		,Id.createLinkId(149413)
+		,Id.createLinkId(50144)
+		,Id.createLinkId(141906)
+		,Id.createLinkId(134865)
+		,Id.createLinkId(113467)
+		,Id.createLinkId(13913)
+		,Id.createLinkId(149473)
+		,Id.createLinkId(147669)
+		,Id.createLinkId(113528)
+		,Id.createLinkId(50143)
+		,Id.createLinkId(134841)
+		,Id.createLinkId(149471)
+		// Bundesplatz
+		,Id.createLinkId(19115)
+		,Id.createLinkId(19110)
+		,Id.createLinkId(98313)
+		,Id.createLinkId(138531)
+		// Bundesplatz - Wexstraße
+		,Id.createLinkId(138800)
+		,Id.createLinkId(138801)
+		,Id.createLinkId(138802)
+		,Id.createLinkId(138803)
+		,Id.createLinkId(138804)
+		,Id.createLinkId(138805)
+		,Id.createLinkId(89045)
+		,Id.createLinkId(97882)
+		,Id.createLinkId(97883)
+		,Id.createLinkId(97884)
+		,Id.createLinkId(89044)
+		,Id.createLinkId(98302)
+		,Id.createLinkId(98308)
+
+	);
 
 	public static void main(String[] args) {
 
