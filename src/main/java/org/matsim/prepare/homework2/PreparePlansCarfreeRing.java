@@ -45,6 +45,33 @@ public class PreparePlansCarfreeRing {
 
 		var links = network.getLinks();
 
+		Predicate<Leg> isLegInGeometry = (leg) -> {
+			if (leg.getRoute() == null) {
+				return false;
+			}
+			return coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(), umweltzone)
+				|| coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
+		};
+
+		// the Route sadly does not expose each routed link, try to approximate via beeline
+		Predicate<Leg> isRouteInGeometry = (leg) -> {
+			if (leg.getRoute() == null) {
+				return false;
+			}
+			return coordinateUtils.isBeelineInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(),
+				links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
+		};
+
+		Predicate<Leg> carNotAllowed = (leg) -> {
+			if (leg == null) {
+				return false;
+			}
+			return (TransportMode.car.equals(leg.getMode())
+				&& !links.get(leg.getRoute().getStartLinkId()).getAllowedModes().contains(TransportMode.car)
+				&& !links.get(leg.getRoute().getEndLinkId()).getAllowedModes().contains(TransportMode.car)
+			);
+		};
+
 		for (Person person : population.getPersons().values()) {
 
 			person.getSelectedPlan();
@@ -53,36 +80,11 @@ public class PreparePlansCarfreeRing {
 				final List<PlanElement> planElements = plan.getPlanElements();
 				var trips = TripStructureUtils.getTrips(plan);
 
-			/*	Predicate<Leg> isLegInGeometry = (leg) -> {
-					if (leg.getRoute() == null) {
-						return false;
-					}
-					return coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(), umweltzone)
-						|| coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
-				};*/
-
-				Predicate<Leg> isRouteInGeometry = (leg) -> {
-					if (leg.getRoute() == null) {
-						return false;
-					}
-					return coordinateUtils.isBeelineInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(),
-						links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
-				};
-
-				Predicate<Leg> carNotAllowed = (leg) -> {
-					if (leg == null) {
-						return false;
-					}
-					return (TransportMode.car.equals(leg.getMode())
-					&& !links.get(leg.getRoute().getStartLinkId()).getAllowedModes().contains(TransportMode.car)
-					&& !links.get(leg.getRoute().getEndLinkId()).getAllowedModes().contains(TransportMode.car)
-					);
-				};
-
 				for (TripStructureUtils.Trip trip : trips) {
 					// has to be done trip-wise since the routing mode has to be consistent per trip
-					boolean adjustmentNeeded = trip.getLegsOnly().stream().anyMatch(isRouteInGeometry.or(carNotAllowed));
-					if (!adjustmentNeeded)
+					boolean changeFromCar = trip.getLegsOnly().stream().anyMatch(isLegInGeometry.or(carNotAllowed));
+					boolean deleteRoute = trip.getLegsOnly().stream().anyMatch(isRouteInGeometry);
+					if (!changeFromCar && !deleteRoute)
 						continue;
 
 					final List<PlanElement> fullTrip =
@@ -91,9 +93,13 @@ public class PreparePlansCarfreeRing {
 							planElements.indexOf(trip.getDestinationActivity()));
 					final String mode = (new OpenBerlinIntermodalPtDrtRouterModeIdentifier()).identifyMainMode(fullTrip);
 					if (mode.equals(TransportMode.car)) {
-						System.out.println(person.getId().toString());
+						//System.out.println(person.getId().toString());
 						fullTrip.clear();
-						fullTrip.add(PopulationUtils.createLeg("pt"));
+						if (changeFromCar) {
+							fullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
+						} else if (deleteRoute) {
+							fullTrip.add(PopulationUtils.createLeg(TransportMode.car));
+						}
 						if (fullTrip.size() != 1) throw new RuntimeException(fullTrip.toString());
 						// todo remove departTime from home/start activity?
 					}
