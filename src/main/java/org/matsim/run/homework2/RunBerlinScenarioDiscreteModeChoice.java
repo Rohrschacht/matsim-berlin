@@ -62,6 +62,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorithmType.FastAStarLandmarks;
+import static org.matsim.prepare.homework1.PrepareNetworkCarfreeRing.removeCarsFromAllowedModesInRing;
 import static org.matsim.prepare.homework2.PreparePlansCarfreeRing.makePlansInRingCarfree;
 
 /**
@@ -87,6 +88,7 @@ public final class RunBerlinScenarioDiscreteModeChoice {
 		cleanPlans(scenario.getPopulation());
 
 		// todo if carfree
+		removeCarsFromAllowedModesInRing(scenario.getNetwork());
 		makePlansInRingCarfree(scenario.getPopulation(), scenario.getNetwork());
 
 		if (!config.transit().isUseTransit()) {

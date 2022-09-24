@@ -5,6 +5,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import static org.matsim.prepare.homework1.CoordinateGeometryUtils.getUmweltzone;
 
@@ -27,6 +28,21 @@ public class PrepareNetworkCarfreeRing {
 			if (coordinateUtils.isCoordInGeometry(link.getCoord(), umweltzone)) {
 				if (link.getAllowedModes().contains(TransportMode.car)) {
 					link.setCapacity(0.01);
+				}
+			}
+		}
+	}
+
+	public static void removeCarsFromAllowedModesInRing(Network network) {
+		var umweltzone = getUmweltzone();
+		var coordinateUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE);
+
+		for (var link : network.getLinks().values()) {
+			if (coordinateUtils.isCoordInGeometry(link.getCoord(), umweltzone)) {
+				if (link.getAllowedModes().contains(TransportMode.car)) {
+					Set<String> allowedModes = new HashSet<>(link.getAllowedModes());
+					allowedModes.remove(TransportMode.car);
+					link.setAllowedModes(allowedModes);
 				}
 			}
 		}
