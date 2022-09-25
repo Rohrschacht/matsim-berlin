@@ -22,21 +22,52 @@ import static org.matsim.run.RunBerlinScenario.*;
 
 public class PreparePlansCarfreeRing {
 	public static void main(String[] args) {
-
 		if (args.length == 0) {
 			args = new String[]{"scenarios/homework2-1pct/input/berlin-v5.5-1pct.config.xml"};
 		}
-
 
 		Config config = prepareConfig(args);
 		Scenario scenario = prepareScenario(config);
 		Controler controler = prepareControler(scenario);
 
-		var planOutfileName = "scenarios/homework2-1pct/output/berlin-v5.5-1pct.carfree_ring_plan.xml";
+		var planOutfileName = "scenarios/homework2-1pct/input/berlin-v5.5-1pct.edited_carfree_ring_plan.xml";
 		var population = scenario.getPopulation();
-
-		makePlansInRingCarfree(population, scenario.getNetwork());
+		duplicatePlans(population, scenario.getNetwork());
+		//makePlansInRingCarfree(population, scenario.getNetwork());
 		PopulationUtils.writePopulation(population, planOutfileName);
+	}
+
+	public static void createNewPlansForPersonsInRing(Population population, Network network) {
+		var umweltzone = getUmweltzone();
+		var coordinateUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE);
+
+		var links = network.getLinks();
+		for (Person person : population.getPersons().values()) {
+			Plan original = person.getPlans().get(0);
+
+			Predicate<Leg> isRouteInGeometry = (leg) -> {
+				if (leg.getRoute() == null) {
+					return false;
+				}
+				return coordinateUtils.isBeelineInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(),
+					links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
+			};
+		}
+	}
+
+	public static void duplicatePlans(Population population, Network network) {
+		var umweltzone = getUmweltzone();
+		var coordinateUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE);
+
+		var links = network.getLinks();
+		for (Person person : population.getPersons().values()) {
+			Plan original = person.getPlans().get(0);
+			Plan duplicated = new PlanImpl();
+			duplicated.setPerson(original.getPerson());
+			duplicated.setType(original.getType());
+			duplicated.getPlanElements().addAll(original.getPlanElements());
+			person.addPlan(duplicated);
+		}
 	}
 
 	public static void makePlansInRingCarfree(Population population, Network network) {
