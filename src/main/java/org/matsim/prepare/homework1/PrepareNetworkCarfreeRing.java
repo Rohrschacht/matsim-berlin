@@ -122,20 +122,11 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(134841)
 		,Id.createLinkId(149471)
 		,Id.createLinkId(13915)
-		// Bundesplazu Tunnel
+		// Bundesplatz Tunnel
 		,Id.createLinkId(152708)
-		,Id.createLinkId(71225)
-		,Id.createLinkId(71226)
-		,Id.createLinkId(71232)
-		,Id.createLinkId(71233)
-		,Id.createLinkId(71280)
-		,Id.createLinkId(71282)
 		,Id.createLinkId(98343)
 		,Id.createLinkId(62495)
 		,Id.createLinkId(152713)
-		,Id.createLinkId(71239)
-		,Id.createLinkId(71240)
-		,Id.createLinkId(71242)
 		,Id.createLinkId(98340)
 		,Id.createLinkId(62509)
 		// Beusselstraße
