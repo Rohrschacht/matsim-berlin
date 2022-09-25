@@ -36,6 +36,9 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(11760)
 		,Id.createLinkId(12586)
 		,Id.createLinkId(129499)
+		,Id.createLinkId(120552)
+		,Id.createLinkId(120486)
+		,Id.createLinkId(120492)
 		// Ringbahn - Neues Ufer
 		,Id.createLinkId(119213)
 		,Id.createLinkId(119212)
@@ -44,26 +47,6 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(40246)
 		,Id.createLinkId(41727)
 		,Id.createLinkId(77691)
-		// Detmolder Straße
-		,Id.createLinkId(82600)
-		,Id.createLinkId(28652)
-		,Id.createLinkId(137869)
-		,Id.createLinkId(79235)
-		// A100 - Abfahrt Detmolder Str.
-		,Id.createLinkId(120962)
-		,Id.createLinkId(130696)
-		,Id.createLinkId(86275)
-		// A100 - Auffahrt Detmolder Str.
-		,Id.createLinkId(86274)
-		,Id.createLinkId(138535)
-		,Id.createLinkId(40245)
-		// Friedrich-Krause-Ufer
-		,Id.createLinkId(137696)
-		,Id.createLinkId(137697)
-		,Id.createLinkId(137698)
-		,Id.createLinkId(137699)
-		,Id.createLinkId(111843)
-		,Id.createLinkId(111844)
 		// An der Putlitzbrücke - Westhafen
 		,Id.createLinkId(92030)
 		,Id.createLinkId(111993)
@@ -89,6 +72,8 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(109644)
 		,Id.createLinkId(109646)
 		,Id.createLinkId(109659)
+		,Id.createLinkId(28823)
+		,Id.createLinkId(90840)
 		// Frankfurter Allee
 		,Id.createLinkId(127552)
 		,Id.createLinkId(3501)
@@ -99,17 +84,22 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(142802)
 		,Id.createLinkId(83447)
 		,Id.createLinkId(3246)
+		,Id.createLinkId(148145)
 		// Greifswalder Str
 		,Id.createLinkId(62189)
 		,Id.createLinkId(147027)
-		// Schönhauser Allee todo Gegenrichtung fehlt?
-		,Id.createLinkId(102315)
-		,Id.createLinkId(102316)
+		// Schönhauser Allee
+		,Id.createLinkId(102314)
+		,Id.createLinkId(156529)
 		// Ostpreußenbrücke - Neue Kantstraße
 		,Id.createLinkId(151256)
 		,Id.createLinkId(149708)
 		,Id.createLinkId(151264)
 		,Id.createLinkId(149700)
+		,Id.createLinkId(13579)
+		,Id.createLinkId(149698)
+		,Id.createLinkId(149699)
+		,Id.createLinkId(9636)
 		// Kurfürstendamm
 		,Id.createLinkId(149582)
 		,Id.createLinkId(69947)
@@ -131,11 +121,7 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(50143)
 		,Id.createLinkId(134841)
 		,Id.createLinkId(149471)
-		// Bundesplatz
-		,Id.createLinkId(19115)
-		,Id.createLinkId(19110)
-		,Id.createLinkId(98313)
-		,Id.createLinkId(138531)
+		,Id.createLinkId(13915)
 		// Bundesplazu Tunnel
 		,Id.createLinkId(152708)
 		,Id.createLinkId(71225)
@@ -152,22 +138,9 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(71242)
 		,Id.createLinkId(98340)
 		,Id.createLinkId(62509)
-		// Bundesplatz - Wexstraße
-		,Id.createLinkId(138800)
-		,Id.createLinkId(138801)
-		,Id.createLinkId(138802)
-		,Id.createLinkId(138803)
-		,Id.createLinkId(138804)
-		,Id.createLinkId(138805)
-		,Id.createLinkId(89045)
-		,Id.createLinkId(97882)
-		,Id.createLinkId(97883)
-		,Id.createLinkId(97884)
-		,Id.createLinkId(89044)
-		,Id.createLinkId(98302)
-		,Id.createLinkId(98308)
 		// Beusselstraße
-		,Id.createLinkId(63453)
+		,Id.createLinkId(63454)
+		,Id.createLinkId(104461)
 		// Kärntener Straße (Enklave)
 		,Id.createLinkId(87443)
 		,Id.createLinkId(87444)
@@ -177,16 +150,29 @@ public class PrepareNetworkCarfreeRing {
 		,Id.createLinkId(91062)
 		,Id.createLinkId(91037)
 		,Id.createLinkId(114751)
+		,Id.createLinkId(77116)
+		// Kaiserdamm
+		,Id.createLinkId(149709)
+		,Id.createLinkId(138052)
+		,Id.createLinkId(22145)
+		,Id.createLinkId(149711)
+		// Spiegelweg
+		,Id.createLinkId(40651)
+		// Gesundbrunnen
+		,Id.createLinkId(27010)
+		,Id.createLinkId(2878)
+		,Id.createLinkId(67518)
+		,Id.createLinkId(27011)
 
 	);
 
 	public static void main(String[] args) {
 
-		var networkFileName = "scenarios/berlin-v5.5-1pct/output-berlin-v5.5-1pct/berlin-v5.5-1pct.output_network.xml.gz";
-		var networkOutfileName = "scenarios/berlin-v5.5-1pct/output-berlin-v5.5-1pct/berlin-v5.5-1pct.carfree_ring_network.xml.gz";
+		var networkFileName = "scenarios/homework2-1pct/input/berlin-v5.5-network.xml.gz";
+		var networkOutfileName = "scenarios/homework2-1pct/input/berlin-v5.5-1pct_network-edited.xml.gz";
 
 		var network = NetworkUtils.readNetwork(networkFileName);
-		makeLinksInRingCarfree(network);
+		removeCarsFromAllowedModesInRing(network);
 		NetworkUtils.writeNetwork(network, networkOutfileName);
 	}
 
