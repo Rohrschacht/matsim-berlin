@@ -89,7 +89,6 @@ public final class RunBerlinScenarioDiscreteModeChoice {
 
 		// todo if carfree
 		removeCarsFromAllowedModesInRing(scenario.getNetwork());
-		makePlansInRingCarfree(scenario.getPopulation(), scenario.getNetwork());
 
 		if (!config.transit().isUseTransit()) {
 			log.info("pt disabled - removing agents planned to use pt");
@@ -105,6 +104,8 @@ public final class RunBerlinScenarioDiscreteModeChoice {
 		}
 
 		Controler controler = prepareControler(scenario);
+
+		makePlansInRingCarfree(scenario.getPopulation(), scenario.getNetwork(), controler);
 		controler.addOverridingModule(new AbstractModule(){
 			@Override public void install() {
 				this.install( new DiscreteModeChoiceModule() ) ;

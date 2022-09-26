@@ -15,7 +15,7 @@ public class AnalyzeEventsInRing {
 		var umweltzone = (Geometry) ShapeFileReader.getAllFeatures(shapeFileName).stream().findFirst().get().getDefaultGeometry();
 		var populationBerlin = PopulationUtils.readPopulation(plansFileName);
 
-		var coordUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE);
+		var coordUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE, CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE_BACK);
 
 		var activityCount = 0;
 		var allActivityCount = 0;

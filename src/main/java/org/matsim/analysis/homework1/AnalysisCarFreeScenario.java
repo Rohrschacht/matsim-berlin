@@ -61,7 +61,7 @@ public final class AnalysisCarFreeScenario {
 			scenarioName, scenarioName));
 
 		var shapeUmweltzone = CoordinateGeometryUtils.getUmweltzone();
-		var geometryUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE,
+		var geometryUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE, CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE_BACK,
 			network);
 
 		// Open csv file. Naming pattern of file '{scenarioName}_{timestamp}'

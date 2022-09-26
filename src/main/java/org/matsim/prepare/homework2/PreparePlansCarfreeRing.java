@@ -1,6 +1,9 @@
 package org.matsim.prepare.homework2;
 
 
+import ch.sbb.matsim.routing.pt.raptor.*;
+import org.locationtech.jts.geom.Geometry;
+import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
@@ -12,15 +15,25 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.TripStructureUtils;
 import org.matsim.prepare.homework1.CoordinateGeometryUtils;
+import org.matsim.pt.router.FakeFacility;
+import org.matsim.pt.transitSchedule.api.TransitStopFacility;
 import org.matsim.run.drt.OpenBerlinIntermodalPtDrtRouterModeIdentifier;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
-import static org.matsim.prepare.homework1.CoordinateGeometryUtils.getUmweltzone;
+import static org.matsim.prepare.homework1.CoordinateGeometryUtils.*;
 import static org.matsim.run.RunBerlinScenario.*;
 
 public class PreparePlansCarfreeRing {
+	private static CoordinateGeometryUtils coordinateUtils; // cache
+	private static RaptorParameters raptorParameters;
+	private static RaptorStopFinder stopFinder;
+	private static SwissRailRaptorData raptorData;
+	private static Map<Id<Link>, ? extends Link> links;
+
 	public static void main(String[] args) {
 		if (args.length == 0) {
 			args = new String[]{"scenarios/homework2-1pct/input/berlin-v5.5-1pct.config.xml"};
@@ -29,19 +42,20 @@ public class PreparePlansCarfreeRing {
 		Config config = prepareConfig(args);
 		Scenario scenario = prepareScenario(config);
 		Controler controler = prepareControler(scenario);
+		raptorParameters = RaptorUtils.createParameters(config);
 
 		var planOutfileName = "scenarios/homework2-1pct/input/berlin-v5.5-1pct.edited_carfree_ring_plan.xml";
 		var population = scenario.getPopulation();
-		duplicatePlans(population, scenario.getNetwork());
-		//makePlansInRingCarfree(population, scenario.getNetwork());
+
+		makePlansInRingCarfree(population, scenario.getNetwork(), controler);
 		PopulationUtils.writePopulation(population, planOutfileName);
 	}
 
 	public static void createNewPlansForPersonsInRing(Population population, Network network) {
 		var umweltzone = getUmweltzone();
-		var coordinateUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE);
+		var coordinateUtils = new CoordinateGeometryUtils(TRANSFORMATION_UMWELTZONE, TRANSFORMATION_UMWELTZONE_BACK);
 
-		var links = network.getLinks();
+		links = network.getLinks();
 		for (Person person : population.getPersons().values()) {
 			Plan original = person.getPlans().get(0);
 
@@ -55,45 +69,129 @@ public class PreparePlansCarfreeRing {
 		}
 	}
 
-	public static void duplicatePlans(Population population, Network network) {
-		var umweltzone = getUmweltzone();
-		var coordinateUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE);
+	public static Plan duplicatePlan(Plan toDuplicate) {
+		Plan duplicated = new PlanImpl();
+		duplicated.setPerson(toDuplicate.getPerson());
+		duplicated.setType(toDuplicate.getType());
+		duplicated.getPlanElements().addAll(toDuplicate.getPlanElements());
+		return duplicated;
+	}
 
-		var links = network.getLinks();
+	/**
+	 *  {@link org.matsim.prepare.population.RemovePtRoutes#run(Plan)}
+	 */
+	public static void makePlansInRingCarfree(Population population, Network network, Controler controler) {
+		var umweltzone = getUmweltzone();
+		coordinateUtils = new CoordinateGeometryUtils(TRANSFORMATION_UMWELTZONE, TRANSFORMATION_UMWELTZONE_BACK, network);
+		links = network.getLinks();
+		Config config = controler.getConfig();
+		Scenario scenario = controler.getScenario();
+		stopFinder = new DefaultRaptorStopFinder(config, null, null);
+		raptorParameters = RaptorUtils.createParameters(config);
+		// raptorParameters.setSearchRadius(3000);
+		raptorData = SwissRailRaptorData.create(scenario.getTransitSchedule(),
+			scenario.getTransitVehicles(), RaptorUtils.createStaticConfig(config), network, new OccupancyData());
+
+		Predicate<Leg> isLegInGeometry = (leg) -> coordinateUtils.isLegInGeometry(leg, umweltzone);
+		Predicate<Leg> isRouteInGeometry = isRouteInGeometryPredicate(umweltzone, coordinateUtils, links);
+		Predicate<Leg> carNotAllowed = carNotAllowedPredicate(links);
+
 		for (Person person : population.getPersons().values()) {
-			Plan original = person.getPlans().get(0);
-			Plan duplicated = new PlanImpl();
-			duplicated.setPerson(original.getPerson());
-			duplicated.setType(original.getType());
-			duplicated.getPlanElements().addAll(original.getPlanElements());
-			person.addPlan(duplicated);
+			preparePlansOfPerson(isLegInGeometry, isRouteInGeometry, carNotAllowed, person);
 		}
 	}
 
-	public static void makePlansInRingCarfree(Population population, Network network) {
-		var umweltzone = getUmweltzone();
-		var coordinateUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE);
+	private static void preparePlansOfPerson(Predicate<Leg> isLegInGeometry, Predicate<Leg> isRouteInGeometry, Predicate<Leg> carNotAllowed, Person person) {
+		Plan plan = person.getSelectedPlan();
+		if (plan == null) {
+			return;
+		}
 
-		var links = network.getLinks();
+		final List<PlanElement> planElements = plan.getPlanElements();
+		var trips = TripStructureUtils.getTrips(plan);
 
-		Predicate<Leg> isLegInGeometry = (leg) -> {
-			if (leg.getRoute() == null) {
-				return false;
+		for (TripStructureUtils.Trip trip : trips) {
+			// has to be done trip-wise since the routing mode has to be consistent per trip
+			boolean changeFromCar = trip.getLegsOnly().stream().anyMatch(isLegInGeometry.or(carNotAllowed));
+			boolean deleteRoute = trip.getLegsOnly().stream().anyMatch(isRouteInGeometry);
+			if (!changeFromCar && !deleteRoute)
+				continue;
+
+			final List<PlanElement> fullTrip = getFullTrip(planElements, trip);
+			final String mode = (new OpenBerlinIntermodalPtDrtRouterModeIdentifier()).identifyMainMode(fullTrip);
+			if (mode.equals(TransportMode.car)) {
+				fullTrip.clear();
+				if (changeFromCar) {
+					fullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
+					// if start or end outside of car-free zone, create new plan with pseudo activity, that should encourage to change switch network mode
+					if (!(coordinateUtils.isLinkInGeometry(links.get(trip.getOriginActivity().getLinkId()), getUmweltzone())
+					 && coordinateUtils.isLinkInGeometry(links.get(trip.getDestinationActivity().getLinkId()), getUmweltzone()))) {
+						Plan newPlan = duplicatePlan(plan);
+						var newFullTrip = getFullTrip(newPlan.getPlanElements(), trip);
+						newFullTrip.add(getActivityBeelineIntersection(trip.getOriginActivity(), trip.getDestinationActivity()));
+						newFullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
+						person.addPlan(newPlan);
+					}
+				} else if (deleteRoute) {
+					fullTrip.add(PopulationUtils.createLeg(TransportMode.car));
+				}
+				if (fullTrip.size() != 1) throw new RuntimeException(fullTrip.toString());
+				// todo remove departTime from home/start activity?
 			}
-			return coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(), umweltzone)
-				|| coordinateUtils.isCoordInGeometry(links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
-		};
+		}
+	}
 
-		// the Route sadly does not expose each routed link, try to approximate via beeline
-		Predicate<Leg> isRouteInGeometry = (leg) -> {
-			if (leg.getRoute() == null) {
-				return false;
+	private static List<PlanElement> getFullTrip(List<PlanElement> planElements, TripStructureUtils.Trip trip) {
+		return planElements.subList(
+			planElements.indexOf(trip.getOriginActivity()) + 1,
+			planElements.indexOf(trip.getDestinationActivity()));
+	}
+
+	private static Activity getActivityBeelineIntersection(Activity start, Activity end) {
+		Coord fakeFacCoord;
+		try {
+			fakeFacCoord = coordinateUtils.getActivityIntersectionCoords(start.getCoord(), end.getCoord(), getUmweltzone());
+		} catch (NullPointerException e) { // no intersection found - offending link must be close to the edge
+			if (!links.get(start.getLinkId()).getAllowedModes().contains(TransportMode.car))
+				fakeFacCoord = start.getCoord();
+			else fakeFacCoord = end.getCoord();
+		}
+		var facility = new FakeFacility(fakeFacCoord);
+		var nearbyStops = stopFinder.findStops(facility,
+			null, null, Double.NaN, raptorParameters, raptorData, RaptorStopFinder.Direction.ACCESS);
+
+		// todo do activity types
+		return PopulationUtils.createActivityFromCoord("mode-change", getCoordFromNearestStop(nearbyStops, start.getCoord()));
+	}
+
+	/**
+	 * {@link InitialStop} does not expose  publicly
+	 */
+	private static Coord getCoordFromNearestStop(List<InitialStop> nearbyStops, Coord fallback) {
+		Field stopField;
+		try {
+			stopField = InitialStop.class.getDeclaredField("stop");
+		} catch (NoSuchFieldException e) {
+			throw new RuntimeException(e);
+		}
+		stopField.setAccessible(true);
+		for (InitialStop stop : nearbyStops) {
+			try {
+				TransitStopFacility transitStopFacility = (TransitStopFacility) stopField.get(stop);
+				if (!coordinateUtils.isCoordInGeometry(transitStopFacility.getCoord(), getUmweltzone())) {
+					return transitStopFacility.getCoord();
+				}
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
 			}
-			return coordinateUtils.isBeelineInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(),
-				links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
-		};
+		}
+		System.err.println("No nearby transit stop facility eligible. Falling back to start activity coords....");
+		return fallback;
+	}
 
-		Predicate<Leg> carNotAllowed = (leg) -> {
+
+	private static Predicate<Leg> carNotAllowedPredicate(Map<Id<Link>, ? extends Link> links) {
+		return (leg) -> {
 			if (leg == null) {
 				return false;
 			}
@@ -102,40 +200,18 @@ public class PreparePlansCarfreeRing {
 				&& !links.get(leg.getRoute().getEndLinkId()).getAllowedModes().contains(TransportMode.car)
 			);
 		};
+	}
 
-		for (Person person : population.getPersons().values()) {
-
-			person.getSelectedPlan();
-			for (Plan plan : person.getPlans()) {
-
-				final List<PlanElement> planElements = plan.getPlanElements();
-				var trips = TripStructureUtils.getTrips(plan);
-
-				for (TripStructureUtils.Trip trip : trips) {
-					// has to be done trip-wise since the routing mode has to be consistent per trip
-					boolean changeFromCar = trip.getLegsOnly().stream().anyMatch(isLegInGeometry.or(carNotAllowed));
-					boolean deleteRoute = trip.getLegsOnly().stream().anyMatch(isRouteInGeometry);
-					if (!changeFromCar && !deleteRoute)
-						continue;
-
-					final List<PlanElement> fullTrip =
-						planElements.subList(
-							planElements.indexOf(trip.getOriginActivity()) + 1,
-							planElements.indexOf(trip.getDestinationActivity()));
-					final String mode = (new OpenBerlinIntermodalPtDrtRouterModeIdentifier()).identifyMainMode(fullTrip);
-					if (mode.equals(TransportMode.car)) {
-						//System.out.println(person.getId().toString());
-						fullTrip.clear();
-						if (changeFromCar) {
-							fullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
-						} else if (deleteRoute) {
-							fullTrip.add(PopulationUtils.createLeg(TransportMode.car));
-						}
-						if (fullTrip.size() != 1) throw new RuntimeException(fullTrip.toString());
-						// todo remove departTime from home/start activity?
-					}
-				}
+	/**
+	 * / the Route sadly does not expose each routed link, try to approximate via beeline
+	 */
+	private static Predicate<Leg> isRouteInGeometryPredicate(Geometry umweltzone, CoordinateGeometryUtils coordinateUtils, Map<Id<Link>, ? extends Link> links) {
+		return (leg) -> {
+			if (leg.getRoute() == null) {
+				return false;
 			}
-		}
+			return coordinateUtils.isBeelineInGeometry(links.get(leg.getRoute().getStartLinkId()).getCoord(),
+				links.get(leg.getRoute().getEndLinkId()).getCoord(), umweltzone);
+		};
 	}
 }

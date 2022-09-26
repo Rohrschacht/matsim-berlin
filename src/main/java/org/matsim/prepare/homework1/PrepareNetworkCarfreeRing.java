@@ -9,7 +9,7 @@ import org.matsim.core.network.NetworkUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.matsim.prepare.homework1.CoordinateGeometryUtils.getUmweltzone;
+import static org.matsim.prepare.homework1.CoordinateGeometryUtils.*;
 
 public class PrepareNetworkCarfreeRing {
 
@@ -169,7 +169,7 @@ public class PrepareNetworkCarfreeRing {
 
 	public static void makeLinksInRingCarfree(Network network) {
 		var umweltzone = getUmweltzone();
-		var coordinateUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE);
+		var coordinateUtils = new CoordinateGeometryUtils(TRANSFORMATION_UMWELTZONE, TRANSFORMATION_UMWELTZONE_BACK);
 
 		for (var link : network.getLinks().values()) {
 			if (coordinateUtils.isCoordInGeometry(link.getCoord(), umweltzone)) {
@@ -190,7 +190,7 @@ public class PrepareNetworkCarfreeRing {
 
 	public static void removeCarsFromAllowedModesInRing(Network network) {
 		var umweltzone = getUmweltzone();
-		var coordinateUtils = new CoordinateGeometryUtils(CoordinateGeometryUtils.TRANSFORMATION_UMWELTZONE);
+		var coordinateUtils = new CoordinateGeometryUtils(TRANSFORMATION_UMWELTZONE, TRANSFORMATION_UMWELTZONE_BACK);
 
 		for (var link : network.getLinks().values()) {
 			// check if link is manually excluded

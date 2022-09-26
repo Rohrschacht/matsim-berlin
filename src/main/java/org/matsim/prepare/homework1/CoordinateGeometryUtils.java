@@ -23,16 +23,21 @@ import java.util.Map;
 
 public class CoordinateGeometryUtils {
 	public static final CoordinateTransformation TRANSFORMATION_UMWELTZONE = TransformationFactory.getCoordinateTransformation("EPSG:31468", "EPSG:25833");
+	public static final CoordinateTransformation TRANSFORMATION_UMWELTZONE_BACK = TransformationFactory.getCoordinateTransformation("EPSG:25833", "EPSG:31468");
+	private static Geometry _umweltzone;
 	private final CoordinateTransformation transformation;
+	private final CoordinateTransformation inverseTransformation;
 	private final Map<Id<Link>, ? extends Link> links;
 
-	public CoordinateGeometryUtils(CoordinateTransformation transformation) {
+	public CoordinateGeometryUtils(CoordinateTransformation transformation, CoordinateTransformation inverseTransformation) {
 		this.transformation = transformation;
+		this.inverseTransformation = inverseTransformation;
 		this.links = Collections.emptyMap();
 	}
 
-	public CoordinateGeometryUtils(CoordinateTransformation transformation, Network network) {
+	public CoordinateGeometryUtils(CoordinateTransformation transformation, CoordinateTransformation inverseTransformation, Network network) {
 		this.transformation = transformation;
+		this.inverseTransformation = inverseTransformation;
 		this.links = network.getLinks();
 	}
 
@@ -69,6 +74,19 @@ public class CoordinateGeometryUtils {
 		return geometry.intersects(line);
 	}
 
+	public Coord getActivityIntersectionCoords(Coord start, Coord end, Geometry geometry) {
+		var p1 = MGC.coord2Point(transformation.transform(start));
+		var p2  = MGC.coord2Point(transformation.transform(end));
+		LineString line = new LineString(new CoordinateArraySequence(new Coordinate[]{p1.getCoordinate(), p2.getCoordinate()}), geometry.getFactory());
+		LineString intersectingLine = new LineString(new CoordinateArraySequence(geometry.intersection(line).getCoordinates()), geometry.getFactory());
+		//geometry.getBoundary().intersection(line).getCoordinate();
+		if (intersectingLine.getStartPoint().getCoordinate().equals(p1.getCoordinate()) || intersectingLine.getStartPoint().getCoordinate().equals(p2.getCoordinate())) {
+			return inverseTransformation.transform(MGC.point2Coord(intersectingLine.getEndPoint()));
+		} else {
+			return inverseTransformation.transform(MGC.point2Coord(intersectingLine.getStartPoint()));
+		}
+	}
+
 	public long countTripsFromTo(Collection<TripStructureUtils.Trip> trips, Geometry from, Geometry to) {
 		return trips.stream()
 				.filter(trip -> isActivityInGeometry(trip.getOriginActivity(), from) && isActivityInGeometry(trip.getDestinationActivity(), to))
@@ -82,7 +100,10 @@ public class CoordinateGeometryUtils {
 	}
 
 	public static Geometry getUmweltzone() {
-		var shapeFileName = "shapes/Umweltzone_test.shp";
-		return (Geometry) ShapeFileReader.getAllFeatures(shapeFileName).stream().findFirst().get().getDefaultGeometry();
+		if (_umweltzone == null) {
+			var shapeFileName = "shapes/Umweltzone_test.shp";
+			_umweltzone = (Geometry) ShapeFileReader.getAllFeatures(shapeFileName).stream().findFirst().get().getDefaultGeometry();
+		}
+		return _umweltzone;
 	}
 }
