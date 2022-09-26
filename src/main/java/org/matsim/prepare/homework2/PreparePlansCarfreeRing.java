@@ -3,6 +3,7 @@ package org.matsim.prepare.homework2;
 
 import ch.sbb.matsim.routing.pt.raptor.*;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.util.AssertionFailedException;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -151,7 +152,7 @@ public class PreparePlansCarfreeRing {
 		Coord fakeFacCoord;
 		try {
 			fakeFacCoord = coordinateUtils.getActivityIntersectionCoords(start.getCoord(), end.getCoord(), getUmweltzone());
-		} catch (NullPointerException e) { // no intersection found - offending link must be close to the edge
+		} catch (IllegalStateException | AssertionFailedException e) { // no intersection found - offending link must be close to the edge
 			if (!links.get(start.getLinkId()).getAllowedModes().contains(TransportMode.car))
 				fakeFacCoord = start.getCoord();
 			else fakeFacCoord = end.getCoord();

@@ -3,6 +3,7 @@ package org.matsim.prepare.homework1;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -78,13 +79,9 @@ public class CoordinateGeometryUtils {
 		var p1 = MGC.coord2Point(transformation.transform(start));
 		var p2  = MGC.coord2Point(transformation.transform(end));
 		LineString line = new LineString(new CoordinateArraySequence(new Coordinate[]{p1.getCoordinate(), p2.getCoordinate()}), geometry.getFactory());
-		LineString intersectingLine = new LineString(new CoordinateArraySequence(geometry.intersection(line).getCoordinates()), geometry.getFactory());
-		//geometry.getBoundary().intersection(line).getCoordinate();
-		if (intersectingLine.getStartPoint().getCoordinate().equals(p1.getCoordinate()) || intersectingLine.getStartPoint().getCoordinate().equals(p2.getCoordinate())) {
-			return inverseTransformation.transform(MGC.point2Coord(intersectingLine.getEndPoint()));
-		} else {
-			return inverseTransformation.transform(MGC.point2Coord(intersectingLine.getStartPoint()));
-		}
+		var intersection = geometry.getBoundary().intersection(line);
+		var resultPoint = new Point(new CoordinateArraySequence(intersection.getCoordinates()), geometry.getFactory());
+		return inverseTransformation.transform(MGC.point2Coord(resultPoint));
 	}
 
 	public long countTripsFromTo(Collection<TripStructureUtils.Trip> trips, Geometry from, Geometry to) {
