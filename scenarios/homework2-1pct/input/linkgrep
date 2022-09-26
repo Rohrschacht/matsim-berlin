@@ -1,0 +1,3 @@
+#!/bin/sh
+# grep for osmid ("origid") to get network link id
+zgrep -B2 -A3 --color "$1" berlin-v5.5-network.xml.gz #| grep -A4 --color="always"  "link id"
