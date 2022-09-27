@@ -6,7 +6,7 @@
 	</module>
 	<module name="controler" >
 		<param name="lastIteration" value="500" />
-		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
+		<param name="overwriteFiles" value="failIfDirectoryExists" />
 		<param name="runId" value="berlin-v5.5-1pct" />
 		<param name="outputDirectory" value="./scenarios/homework2-1pct/output" />
 		<param name="writeEventsInterval" value="50" />
