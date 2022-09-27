@@ -154,7 +154,7 @@ public class PreparePlansCarfreeRing {
 		Coord fakeFacCoord;
 		try {
 			fakeFacCoord = coordinateUtils.getActivityIntersectionCoords(start.getCoord(), end.getCoord(), getUmweltzone());
-		} catch (IllegalStateException | AssertionFailedException e) { // no intersection found - offending link must be close to the edge
+		} catch (ArrayIndexOutOfBoundsException e) { // no intersection found - offending link must be close to the edge
 			System.err.println("no intersection found for " + start.getCoord().toString() + " and " + end.getCoord().toString());
 			if (!start.getAllowedModes().contains(TransportMode.car))
 				fakeFacCoord = start.getCoord();

@@ -80,7 +80,7 @@ public class CoordinateGeometryUtils {
 		var p2  = MGC.coord2Point(transformation.transform(end));
 		LineString line = new LineString(new CoordinateArraySequence(new Coordinate[]{p1.getCoordinate(), p2.getCoordinate()}), geometry.getFactory());
 		var intersection = geometry.getBoundary().intersection(line);
-		var resultPoint = new Point(new CoordinateArraySequence(intersection.getCoordinates()), geometry.getFactory());
+		var resultPoint = new Point(new CoordinateArraySequence(new Coordinate[]{intersection.getCoordinates()[0]}), geometry.getFactory());
 		return inverseTransformation.transform(MGC.point2Coord(resultPoint));
 	}
 
