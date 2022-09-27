@@ -122,14 +122,16 @@ public class PreparePlansCarfreeRing {
 			final String mode = (new OpenBerlinIntermodalPtDrtRouterModeIdentifier()).identifyMainMode(fullTrip);
 			if (mode.equals(TransportMode.car)) {
 				fullTrip.clear();
+				Link start = links.get(trip.getOriginActivity().getLinkId());
+				Link end = links.get(trip.getDestinationActivity().getLinkId());
 				if (changeFromCar) {
 					fullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
 					// if start or end outside of car-free zone, create new plan with pseudo activity, that should encourage to change switch network mode
-					if (!(coordinateUtils.isLinkInGeometry(links.get(trip.getOriginActivity().getLinkId()), getUmweltzone())
-					 && coordinateUtils.isLinkInGeometry(links.get(trip.getDestinationActivity().getLinkId()), getUmweltzone()))) {
+					if (!(coordinateUtils.isLinkInGeometry(start, getUmweltzone())
+					 && coordinateUtils.isLinkInGeometry(end, getUmweltzone()))) {
 						Plan newPlan = duplicatePlan(plan);
 						var newFullTrip = getFullTrip(newPlan.getPlanElements(), trip);
-						newFullTrip.add(getActivityBeelineIntersection(trip.getOriginActivity(), trip.getDestinationActivity()));
+						newFullTrip.add(getActivityBeelineIntersection(start, end));
 						newFullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
 						person.addPlan(newPlan);
 					}
@@ -148,12 +150,13 @@ public class PreparePlansCarfreeRing {
 			planElements.indexOf(trip.getDestinationActivity()));
 	}
 
-	private static Activity getActivityBeelineIntersection(Activity start, Activity end) {
+	private static Activity getActivityBeelineIntersection(Link start, Link end) {
 		Coord fakeFacCoord;
 		try {
 			fakeFacCoord = coordinateUtils.getActivityIntersectionCoords(start.getCoord(), end.getCoord(), getUmweltzone());
 		} catch (IllegalStateException | AssertionFailedException e) { // no intersection found - offending link must be close to the edge
-			if (!links.get(start.getLinkId()).getAllowedModes().contains(TransportMode.car))
+			System.err.println("no intersection found for " + start.getCoord().toString() + " and " + end.getCoord().toString());
+			if (!start.getAllowedModes().contains(TransportMode.car))
 				fakeFacCoord = start.getCoord();
 			else fakeFacCoord = end.getCoord();
 		}
@@ -161,7 +164,7 @@ public class PreparePlansCarfreeRing {
 		var nearbyStops = stopFinder.findStops(facility,
 			null, null, Double.NaN, raptorParameters, raptorData, RaptorStopFinder.Direction.ACCESS);
 
-		// todo do activity types
+		// todo activity types?
 		return PopulationUtils.createActivityFromCoord("mode-change", getCoordFromNearestStop(nearbyStops, start.getCoord()));
 	}
 
