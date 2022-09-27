@@ -187,6 +187,11 @@
 				<param name="mode" value="walk" />
 			</parameterset>
 		</parameterset>
+		<parameterset type="activityParams" >
+			<!-- our custom activity to allow network mode change before the car free zone -->
+			<param name="activityType" value="mode-change" />
+			<param name="typicalDuration" value="00:00:01" />
+		</parameterset>
 	</module>
 	
 	<module name="transitRouter">
