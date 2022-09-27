@@ -165,7 +165,11 @@ public class PreparePlansCarfreeRing {
 			null, null, Double.NaN, raptorParameters, raptorData, RaptorStopFinder.Direction.ACCESS);
 
 		// todo activity types?
-		return PopulationUtils.createActivityFromCoord("mode-change", getCoordFromNearestStop(nearbyStops, start.getCoord()));
+		Activity newActivity = PopulationUtils.createActivityFromCoord("mode-change", getCoordFromNearestStop(nearbyStops, start.getCoord()));
+		newActivity.setMaximumDuration(0d);
+		newActivity.setEndTimeUndefined();
+		newActivity.setStartTimeUndefined();
+		return newActivity;
 	}
 
 	/**
