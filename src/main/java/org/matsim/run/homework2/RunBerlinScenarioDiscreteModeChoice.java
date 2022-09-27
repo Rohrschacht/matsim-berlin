@@ -114,8 +114,6 @@ public final class RunBerlinScenarioDiscreteModeChoice {
 
 		config.travelTimeCalculator().setFilterModes(true);
 
-		config.controler().setLastIteration(2);
-
 		controler.run();
 	}
 
