@@ -8,8 +8,7 @@ from collections import defaultdict
 counter = defaultdict(lambda: 0)
 tripc = defaultdict(lambda: 0)
 
-filename = "homework2-1pct_carfreezone/berlin-v5.5-1pct.output_trips.csv.gz"
-
+filename = "carfree/berlin-v5.5-1pct.output_trips.csv.gz"
 
 person_id = 0
 main_mode = 8
