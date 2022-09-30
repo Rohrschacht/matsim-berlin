@@ -129,11 +129,11 @@ public class PreparePlansCarfreeRing {
 				if (changeFromCar) {
 					fullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
 					// if start or end outside of car-free zone, create new plan with pseudo activity, that should encourage to change switch network mode
-					if (!(coordinateUtils.isLinkInGeometry(start, getUmweltzone())
-					 && coordinateUtils.isLinkInGeometry(end, getUmweltzone()))) {
+					if (start.getAllowedModes().contains(TransportMode.car)
+					 || end.getAllowedModes().contains(TransportMode.car)) {
 						var newFullTrip = getFullTrip(newPlan.getPlanElements(), trip);
 						newFullTrip.clear();
-						fullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
+						newFullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
 						newFullTrip.add(getActivityBeelineIntersection(start, end));
 						newFullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
 						planChanged = true;
