@@ -111,6 +111,8 @@ public class PreparePlansCarfreeRing {
 		final List<PlanElement> planElements = plan.getPlanElements();
 		var trips = TripStructureUtils.getTrips(plan);
 
+		Plan newPlan = duplicatePlan(plan);
+		boolean planChanged = false;
 		for (TripStructureUtils.Trip trip : trips) {
 			// has to be done trip-wise since the routing mode has to be consistent per trip
 			boolean changeFromCar = trip.getLegsOnly().stream().anyMatch(isLegInGeometry.or(carNotAllowed));
@@ -129,11 +131,12 @@ public class PreparePlansCarfreeRing {
 					// if start or end outside of car-free zone, create new plan with pseudo activity, that should encourage to change switch network mode
 					if (!(coordinateUtils.isLinkInGeometry(start, getUmweltzone())
 					 && coordinateUtils.isLinkInGeometry(end, getUmweltzone()))) {
-						Plan newPlan = duplicatePlan(plan);
 						var newFullTrip = getFullTrip(newPlan.getPlanElements(), trip);
+						newFullTrip.clear();
+						fullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
 						newFullTrip.add(getActivityBeelineIntersection(start, end));
 						newFullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
-						person.addPlan(newPlan);
+						planChanged = true;
 					}
 				} else if (deleteRoute) {
 					fullTrip.add(PopulationUtils.createLeg(TransportMode.car));
@@ -141,6 +144,9 @@ public class PreparePlansCarfreeRing {
 				if (fullTrip.size() != 1) throw new RuntimeException(fullTrip.toString());
 				// todo remove departTime from home/start activity?
 			}
+		}
+		if (planChanged) {
+			person.addPlan(newPlan);
 		}
 	}
 
