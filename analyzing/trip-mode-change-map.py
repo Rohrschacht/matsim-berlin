@@ -3,7 +3,7 @@ from pyproj import Transformer
 import matplotlib.pyplot as plt
 
 
-filename = "carfree/berlin-v5.5-1pct.output_trips.csv.gz"
+filename = "carfree2/berlin-v5.5-1pct.output_trips.csv.gz"
 proj_transformer = Transformer.from_crs("epsg:31468", "epsg:25833")
 berlin_png = plt.imread("berlin.png")
 

@@ -2,7 +2,7 @@ import pandas as pd
 from pyproj import Transformer
 import matplotlib.pyplot as plt
 
-filename = "carfree/berlin-v5.5-1pct.output_trips.csv.gz"
+filename = "carfree-v2/berlin-v5.5-1pct.output_trips.csv.gz"
 affected_persons = "list_affected_ppl_plans.csv"
 
 data = pd.read_csv(filename, compression="gzip", delimiter=";", low_memory=False)
