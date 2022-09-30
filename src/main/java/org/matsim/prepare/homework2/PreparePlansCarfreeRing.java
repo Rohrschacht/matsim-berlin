@@ -127,22 +127,26 @@ public class PreparePlansCarfreeRing {
 				Link start = links.get(trip.getOriginActivity().getLinkId());
 				Link end = links.get(trip.getDestinationActivity().getLinkId());
 				if (changeFromCar) {
-					fullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
 					// if start or end outside of car-free zone, create new plan with pseudo activity, that should encourage to change switch network mode
 					if (start.getAllowedModes().contains(TransportMode.car)
 					 || end.getAllowedModes().contains(TransportMode.car)) {
 						var newFullTrip = getFullTrip(newPlan.getPlanElements(), trip);
 						newFullTrip.clear();
-						newFullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
+						// allow car for the part of the trip that is outside of the zone
+						newFullTrip.add(PopulationUtils.createLeg(start.getAllowedModes().contains(TransportMode.car) ? TransportMode.car : TransportMode.pt));
 						newFullTrip.add(getActivityBeelineIntersection(start, end));
-						newFullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
+						newFullTrip.add(PopulationUtils.createLeg(end.getAllowedModes().contains(TransportMode.car) ? TransportMode.car : TransportMode.pt));
 						planChanged = true;
+						// sanity check
+						if (newFullTrip.size() != 3) throw new RuntimeException(newFullTrip.toString());
 					}
-				} else if (deleteRoute) {
+					// previous plan / full trip inside the zone
+					fullTrip.add(PopulationUtils.createLeg(TransportMode.pt));
+				} else if (deleteRoute) { // but keep the car
 					fullTrip.add(PopulationUtils.createLeg(TransportMode.car));
 				}
+				// sanity check
 				if (fullTrip.size() != 1) throw new RuntimeException(fullTrip.toString());
-				// todo remove departTime from home/start activity?
 			}
 		}
 		if (planChanged) {
